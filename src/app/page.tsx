@@ -1,103 +1,274 @@
-import Image from "next/image";
+'use client';
+
+import { useState } from 'react';
+
+interface Diputado {
+  foto: string;
+  fotoCompleta?: string;
+  nombre: string;
+  link: string;
+  distrito: string;
+  mandato: string;
+  inicioMandato: string;
+  finMandato: string;
+  bloque: string;
+  profesion?: string;
+  fechaNacimiento?: string;
+  email?: string;
+  ubicacionOficina?: string;
+  proyectosLeyFirmante?: number;
+  proyectosLeyCofirmante?: number;
+}
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [diputados, setDiputados] = useState<Diputado[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [limit, setLimit] = useState(5);
+  const [includeDetails, setIncludeDetails] = useState(true);
+  const [apiKey, setApiKey] = useState(''); // API Key (debe configurarse)
+  const [apiResponse, setApiResponse] = useState<{
+    message?: string;
+    count?: number;
+    detailedCount?: number;
+  } | null>(null);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+  const fetchDiputados = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const params = new URLSearchParams();
+      if (includeDetails) {
+        params.append('limit', limit.toString());
+      } else {
+        params.append('details', 'false');
+      }
+
+      const response = await fetch(`/api/diputados?${params}`, {
+        headers: {
+          'X-API-Key': apiKey,
+          'Content-Type': 'application/json'
+        }
+      });
+      const data = await response.json();
+
+      if (data.success) {
+        setDiputados(data.data);
+        setApiResponse(data);
+      } else {
+        setError(data.error || 'Error al cargar los datos');
+        if (data.instructions) {
+          console.log('Instrucciones de autenticación:', data.instructions);
+        }
+      }
+    } catch (error) {
+      setError('Error de conexión');
+      console.error('Error:', error);
+    } finally {
+      setLoading(false);
+    }
+  }; return (
+    <div className="min-h-screen p-8">
+      <div className="max-w-7xl mx-auto">
+        <h1 className="text-3xl font-bold mb-8 text-center">
+          Diputados de Argentina - Scraping HCDN
+        </h1>
+
+        <div className="bg-gray-500 p-6 rounded-lg shadow-md mb-8">
+          <h2 className="text-xl font-semibold mb-4">Configuración del Scraping</h2>
+
+          <div className="mb-4">
+            <label className="block text-sm font-medium mb-2">
+              API Key (requerida):
+            </label>
+            <input
+              type="password"
+              value={apiKey}
+              onChange={(e) => setApiKey(e.target.value)}
+              placeholder="Ingresa tu API Key"
+              className="w-full p-2 border rounded"
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+            <p className="text-xs text-gray-500 mt-1">
+              Genera tu API Key con: <code>node scripts/generate-api-keys.js</code>
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                <input
+                  type="checkbox"
+                  checked={includeDetails}
+                  onChange={(e) => setIncludeDetails(e.target.checked)}
+                  className="mr-2"
+                />
+                Incluir detalles individuales
+              </label>
+            </div>
+
+            {includeDetails && (
+              <div>
+                <label className="block text-sm font-medium mb-2">
+                  Límite de perfiles detallados:
+                </label>
+                <select
+                  value={limit}
+                  onChange={(e) => setLimit(parseInt(e.target.value))}
+                  className="w-full p-2 border rounded"
+                >
+                  <option value={5}>5 diputados</option>
+                  <option value={10}>10 diputados</option>
+                  <option value={20}>20 diputados</option>
+                  <option value={50}>50 diputados</option>
+                  <option value={999}>Todos (¡Cuidado, puede tardar mucho!)</option>
+                </select>
+              </div>
+            )}
+
+            <div className="flex items-end">
+              <button
+                onClick={fetchDiputados}
+                disabled={loading}
+                className="bg-blue-500 hover:bg-blue-700 disabled:bg-gray-400 text-white font-bold py-2 px-4 rounded w-full"
+              >
+                {loading ? 'Cargando...' : 'Obtener Diputados'}
+              </button>
+            </div>
+          </div>
+
+          {apiResponse && (
+            <div className="bg-gray-100 p-3 rounded text-sm">
+              <strong>Estado:</strong> {apiResponse.message} <br />
+              <strong>Total:</strong> {apiResponse.count} diputados |
+              <strong> Con detalles:</strong> {apiResponse.detailedCount || 0}
+            </div>
+          )}
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+
+        {error && (
+          <div className="bg-red-400 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+            {error}
+          </div>
+        )}
+
+        {diputados.length > 0 && (
+          <div className="bg-white shadow-lg rounded-lg overflow-hidden">
+            <div className="bg-gray-50 px-6 py-3 border-b">
+              <h2 className="text-xl font-semibold">
+                Total de Diputados: {diputados.length}
+              </h2>
+            </div>
+
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-100">
+                  <tr>
+                    <th className="px-4 py-2 text-left">Foto</th>
+                    <th className="px-4 py-2 text-left">Nombre</th>
+                    <th className="px-4 py-2 text-left">Distrito</th>
+                    <th className="px-4 py-2 text-left">Profesión</th>
+                    <th className="px-4 py-2 text-left">Nac.</th>
+                    <th className="px-4 py-2 text-left">Email</th>
+                    <th className="px-4 py-2 text-left">Proyectos LEY</th>
+                    <th className="px-4 py-2 text-left">Mandato</th>
+                    <th className="px-4 py-2 text-left">Bloque</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {diputados.map((diputado, index) => (
+                    <tr key={index} className="border-b hover:bg-gray-50">
+                      <td className="px-4 py-2">
+                        <div className="flex flex-col items-center space-y-1">
+                          <img
+                            src={diputado.fotoCompleta || diputado.foto}
+                            alt={diputado.nombre}
+                            className="w-12 h-12 rounded-full object-cover"
+                            onError={(e) => {
+                              e.currentTarget.src = diputado.foto;
+                            }}
+                          />
+                          {diputado.fotoCompleta && (
+                            <span className="text-xs text-green-600">✓</span>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-4 py-2">
+                        <a
+                          href={diputado.link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:text-blue-800 underline"
+                        >
+                          {diputado.nombre}
+                        </a>
+                      </td>
+                      <td className="px-4 py-2">{diputado.distrito}</td>
+                      <td className="px-4 py-2">
+                        <span className={diputado.profesion ? 'text-green-600' : 'text-gray-400'}>
+                          {diputado.profesion || 'No disponible'}
+                        </span>
+                      </td>
+                      <td className="px-4 py-2">
+                        <span className={diputado.fechaNacimiento ? 'text-green-600' : 'text-gray-400'}>
+                          {diputado.fechaNacimiento || 'N/A'}
+                        </span>
+                      </td>
+                      <td className="px-4 py-2">
+                        {diputado.email ? (
+                          <a
+                            href={`mailto:${diputado.email}`}
+                            className="text-blue-600 hover:text-blue-800 underline text-sm"
+                          >
+                            {diputado.email}
+                          </a>
+                        ) : (
+                          <span className="text-gray-400">No disponible</span>
+                        )}
+                      </td>
+                      <td className="px-4 py-2">
+                        <div className="text-sm">
+                          {(diputado.proyectosLeyFirmante !== undefined || diputado.proyectosLeyCofirmante !== undefined) ? (
+                            <>
+                              <div className="flex items-center space-x-2">
+                                <span className="text-green-600 font-semibold">F:</span>
+                                <span className={diputado.proyectosLeyFirmante ? 'text-green-600' : 'text-gray-400'}>
+                                  {diputado.proyectosLeyFirmante ?? 'N/A'}
+                                </span>
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                <span className="text-blue-600 font-semibold">C:</span>
+                                <span className={diputado.proyectosLeyCofirmante ? 'text-blue-600' : 'text-gray-400'}>
+                                  {diputado.proyectosLeyCofirmante ?? 'N/A'}
+                                </span>
+                              </div>
+                            </>
+                          ) : (
+                            <span className="text-gray-400">Sin datos</span>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-4 py-2">
+                        <div className="text-sm">
+                          <div>{diputado.mandato}</div>
+                          <div className="text-gray-500">
+                            {diputado.inicioMandato} - {diputado.finMandato}
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-4 py-2 text-sm">{diputado.bloque}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        <div className="mt-8 text-center text-gray-600">
+          <p>API Endpoint: <code className="bg-gray-100 px-2 py-1 rounded">/api/diputados</code></p>
+          <p className="mt-2 text-sm">Haz clic en &quot;Obtener Diputados&quot; para hacer scraping de https://www.hcdn.gob.ar/diputados/</p>
+        </div>
+      </div>
     </div>
   );
 }
