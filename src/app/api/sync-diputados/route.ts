@@ -64,18 +64,49 @@ async function obtenerDetallesDiputado(linkDiputado: string, reintentos = 3): Pr
       const $ = cheerio.load(html);
 
       // Extraer profesión
-      const profesion = $('p:contains("Profesión:") + p').text().trim() ||
-        $('strong:contains("Profesión:")').parent().text().replace('Profesión:', '').trim();
+      let profesion = '';
+      const profesionSpan = $('.encabezadoProfesion span').first();
+
+      if (profesionSpan.length > 0) {
+        // Si existe el span de profesión, obtener su contenido
+        const profesionTexto = profesionSpan.text().trim();
+        if (profesionTexto && profesionTexto.length > 0) {
+          profesion = profesionTexto;
+        } else {
+          profesion = 'Sin información';
+        }
+      } else {
+        // Fallback para estructura HTML diferente
+        const profesionFallback = $('strong:contains("Profesión:")').siblings('span').first().text().trim();
+        if (profesionFallback && profesionFallback.length > 0) {
+          profesion = profesionFallback;
+        } else {
+          profesion = 'Sin información';
+        }
+      }
 
       // Extraer fecha de nacimiento
       let fechaNacimiento: Date | undefined;
-      const fechaNacimientoTexto = $('p:contains("Fecha de Nacimiento:") + p').text().trim() ||
-        $('strong:contains("Fecha de Nacimiento:")').parent().text().replace('Fecha de Nacimiento:', '').trim();
+      let fechaNacimientoTexto = '';
 
-      if (fechaNacimientoTexto) {
-        const fecha = new Date(fechaNacimientoTexto);
-        if (!isNaN(fecha.getTime())) {
-          fechaNacimiento = fecha;
+      const fechaSpan = $('.encabezadoFecha span').first();
+      if (fechaSpan.length > 0) {
+        fechaNacimientoTexto = fechaSpan.text().trim();
+      } else {
+        // Fallback para estructura HTML diferente
+        fechaNacimientoTexto = $('strong:contains("Fecha de Nac.")').siblings('span').first().text().trim();
+      }
+
+      if (fechaNacimientoTexto && fechaNacimientoTexto.length > 0) {
+        // Limpiar la fecha de espacios y caracteres innecesarios
+        const fechaLimpia = fechaNacimientoTexto.replace(/^\s+|\s+$/g, '');
+        // Verificar que tenga formato de fecha (dd/mm/yyyy)
+        if (/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(fechaLimpia)) {
+          const [dia, mes, año] = fechaLimpia.split('/');
+          const fecha = new Date(parseInt(año), parseInt(mes) - 1, parseInt(dia));
+          if (!isNaN(fecha.getTime()) && fecha.getFullYear() > 1900 && fecha.getFullYear() < 2010) {
+            fechaNacimiento = fecha;
+          }
         }
       }
 
@@ -95,7 +126,7 @@ async function obtenerDetallesDiputado(linkDiputado: string, reintentos = 3): Pr
       const proyectos = await obtenerProyectosLey(linkDiputado, slug);
 
       return {
-        profesion: profesion || undefined,
+        profesion: profesion || 'Sin información',
         fechaNacimiento,
         email: email || undefined,
         fotoCompleta: fotoCompleta || undefined,

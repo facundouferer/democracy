@@ -45,6 +45,16 @@ interface BloqueStat {
   promedioProyectos: number;
 }
 
+interface DistritoStat {
+  _id: string;
+  distrito: string;
+  cantidadDiputados: number;
+  totalProyectosFirmante: number;
+  totalProyectosCofirmante: number;
+  totalProyectos: number;
+  promedioProyectos: number;
+}
+
 interface EstadisticasGenerales {
   totalDiputados: number;
   totalProyectosFirmante: number;
@@ -56,7 +66,11 @@ interface EstadisticasGenerales {
 
 interface RankingData {
   ranking: Diputado[];
+  rankingFirmantes: Diputado[];
+  rankingCofirmantes: Diputado[];
+  rankingMenores: Diputado[];
   bloques: BloqueStat[];
+  distritos: DistritoStat[];
   estadisticas: EstadisticasGenerales;
 }
 
@@ -64,7 +78,7 @@ export default function RankingPage() {
   const [data, setData] = useState<RankingData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [viewMode, setViewMode] = useState<'ranking' | 'bloques'>('ranking');
+  const [viewMode, setViewMode] = useState<'ranking' | 'firmantes' | 'cofirmantes' | 'menores' | 'bloques' | 'distritos'>('ranking');
 
   useEffect(() => {
     const fetchRankingData = async () => {
@@ -154,6 +168,64 @@ export default function RankingPage() {
           '#FF9F40', '#FF6384', '#C9CBCF', '#4BC0C0', '#FF6384'
         ],
         borderColor: '#1f2937',
+        borderWidth: 2,
+      },
+    ],
+  };
+
+  // Datos para ranking de firmantes
+  const firmantesData = {
+    labels: data.rankingFirmantes.slice(0, 10).map(d => d.nombre),
+    datasets: [
+      {
+        label: 'Proyectos como Firmante',
+        data: data.rankingFirmantes.slice(0, 10).map(d => d.proyectosLeyFirmante),
+        backgroundColor: 'rgba(59, 130, 246, 0.8)',
+        borderColor: 'rgba(59, 130, 246, 1)',
+        borderWidth: 1,
+      },
+    ],
+  };
+
+  // Datos para ranking de cofirmantes
+  const cofirmantesData = {
+    labels: data.rankingCofirmantes.slice(0, 10).map(d => d.nombre),
+    datasets: [
+      {
+        label: 'Proyectos como Cofirmante',
+        data: data.rankingCofirmantes.slice(0, 10).map(d => d.proyectosLeyCofirmante),
+        backgroundColor: 'rgba(16, 185, 129, 0.8)',
+        borderColor: 'rgba(16, 185, 129, 1)',
+        borderWidth: 1,
+      },
+    ],
+  };
+
+  // Datos para ranking de menores proyectos
+  const menoresData = {
+    labels: data.rankingMenores.map(d => d.nombre),
+    datasets: [
+      {
+        label: 'Total de Proyectos',
+        data: data.rankingMenores.map(d => d.totalProyectos),
+        backgroundColor: 'rgba(239, 68, 68, 0.8)',
+        borderColor: 'rgba(239, 68, 68, 1)',
+        borderWidth: 1,
+      },
+    ],
+  };
+
+  // Datos para análisis por distritos
+  const distritosData = {
+    labels: data.distritos.slice(0, 10).map(d => d.distrito),
+    datasets: [
+      {
+        data: data.distritos.slice(0, 10).map(d => d.cantidadDiputados),
+        backgroundColor: [
+          '#10B981', '#059669', '#34D399', '#6EE7B7', '#A7F3D0',
+          '#D1FAE5', '#F0FDF4', '#22C55E', '#16A34A', '#15803D'
+        ],
+        borderColor: '#065F46',
         borderWidth: 2,
       },
     ],
@@ -254,22 +326,54 @@ export default function RankingPage() {
         </div>
 
         {/* Botones de navegación */}
-        <div className="flex space-x-4 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
           <button
             onClick={() => setViewMode('ranking')}
-            className={`retro-button px-6 py-3 font-bold transition-all duration-300 ${viewMode === 'ranking' ? 'neon-glow' : ''
+            className={`retro-button px-4 py-3 font-bold transition-all duration-300 text-sm ${viewMode === 'ranking' ? 'neon-glow' : ''
               }`}
             style={{ fontFamily: "'Orbitron', monospace" }}
           >
-            💾 RANKING INDIVIDUAL
+            💾 RANKING TOTAL
+          </button>
+          <button
+            onClick={() => setViewMode('firmantes')}
+            className={`retro-button px-4 py-3 font-bold transition-all duration-300 text-sm ${viewMode === 'firmantes' ? 'neon-glow' : ''
+              }`}
+            style={{ fontFamily: "'Orbitron', monospace" }}
+          >
+            📝 FIRMANTES
+          </button>
+          <button
+            onClick={() => setViewMode('cofirmantes')}
+            className={`retro-button px-4 py-3 font-bold transition-all duration-300 text-sm ${viewMode === 'cofirmantes' ? 'neon-glow' : ''
+              }`}
+            style={{ fontFamily: "'Orbitron', monospace" }}
+          >
+            ✍️ COFIRMANTES
+          </button>
+          <button
+            onClick={() => setViewMode('menores')}
+            className={`retro-button px-4 py-3 font-bold transition-all duration-300 text-sm ${viewMode === 'menores' ? 'neon-glow' : ''
+              }`}
+            style={{ fontFamily: "'Orbitron', monospace" }}
+          >
+            📉 MENORES
           </button>
           <button
             onClick={() => setViewMode('bloques')}
-            className={`retro-button px-6 py-3 font-bold transition-all duration-300 ${viewMode === 'bloques' ? 'neon-glow' : ''
+            className={`retro-button px-4 py-3 font-bold transition-all duration-300 text-sm ${viewMode === 'bloques' ? 'neon-glow' : ''
               }`}
             style={{ fontFamily: "'Orbitron', monospace" }}
           >
-            🚀 ANÁLISIS POR BLOQUES
+            🚀 BLOQUES
+          </button>
+          <button
+            onClick={() => setViewMode('distritos')}
+            className={`retro-button px-4 py-3 font-bold transition-all duration-300 text-sm ${viewMode === 'distritos' ? 'neon-glow' : ''
+              }`}
+            style={{ fontFamily: "'Orbitron', monospace" }}
+          >
+            🗺️ DISTRITOS
           </button>
         </div>
       </div>      {viewMode === 'ranking' && (
@@ -385,6 +489,194 @@ export default function RankingPage() {
                       <td className="py-3 text-blue-400">{bloque.totalProyectosFirmante}</td>
                       <td className="py-3 text-purple-400">{bloque.totalProyectosCofirmante}</td>
                       <td className="py-3 text-yellow-400">{bloque.promedioProyectos}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Vista de Ranking de Firmantes */}
+      {viewMode === 'firmantes' && (
+        <div>
+          <div className="bg-gray-800 rounded-lg p-6 mb-8">
+            <h3 className="text-xl font-semibold mb-4">Top 10 Firmantes de Proyectos</h3>
+            <Bar data={firmantesData} options={barOptions} />
+          </div>
+
+          <div className="bg-gray-800 rounded-lg p-6">
+            <h3 className="text-xl font-semibold mb-6">Ranking Completo de Firmantes</h3>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left">
+                <thead>
+                  <tr className="border-b border-gray-600">
+                    <th className="pb-3 text-gray-300">Posición</th>
+                    <th className="pb-3 text-gray-300">Diputado</th>
+                    <th className="pb-3 text-gray-300">Distrito</th>
+                    <th className="pb-3 text-gray-300">Bloque</th>
+                    <th className="pb-3 text-gray-300">Proyectos Firmante</th>
+                    <th className="pb-3 text-gray-300">Proyectos Cofirmante</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.rankingFirmantes.map((diputado, index) => (
+                    <tr key={diputado._id} className="border-b border-gray-700">
+                      <td className="py-3 font-bold text-green-400">#{index + 1}</td>
+                      <td className="py-3 font-medium">{diputado.nombre}</td>
+                      <td className="py-3 text-gray-400">{diputado.distrito}</td>
+                      <td className="py-3 text-gray-400">{diputado.bloque}</td>
+                      <td className="py-3 text-blue-400 font-bold">{diputado.proyectosLeyFirmante}</td>
+                      <td className="py-3 text-purple-400">{diputado.proyectosLeyCofirmante}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Vista de Ranking de Cofirmantes */}
+      {viewMode === 'cofirmantes' && (
+        <div>
+          <div className="bg-gray-800 rounded-lg p-6 mb-8">
+            <h3 className="text-xl font-semibold mb-4">Top 10 Cofirmantes de Proyectos</h3>
+            <Bar data={cofirmantesData} options={barOptions} />
+          </div>
+
+          <div className="bg-gray-800 rounded-lg p-6">
+            <h3 className="text-xl font-semibold mb-6">Ranking Completo de Cofirmantes</h3>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left">
+                <thead>
+                  <tr className="border-b border-gray-600">
+                    <th className="pb-3 text-gray-300">Posición</th>
+                    <th className="pb-3 text-gray-300">Diputado</th>
+                    <th className="pb-3 text-gray-300">Distrito</th>
+                    <th className="pb-3 text-gray-300">Bloque</th>
+                    <th className="pb-3 text-gray-300">Proyectos Cofirmante</th>
+                    <th className="pb-3 text-gray-300">Proyectos Firmante</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.rankingCofirmantes.map((diputado, index) => (
+                    <tr key={diputado._id} className="border-b border-gray-700">
+                      <td className="py-3 font-bold text-green-400">#{index + 1}</td>
+                      <td className="py-3 font-medium">{diputado.nombre}</td>
+                      <td className="py-3 text-gray-400">{diputado.distrito}</td>
+                      <td className="py-3 text-gray-400">{diputado.bloque}</td>
+                      <td className="py-3 text-purple-400 font-bold">{diputado.proyectosLeyCofirmante}</td>
+                      <td className="py-3 text-blue-400">{diputado.proyectosLeyFirmante}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Vista de Top 10 con Menos Proyectos */}
+      {viewMode === 'menores' && (
+        <div>
+          <div className="bg-gray-800 rounded-lg p-6 mb-8">
+            <h3 className="text-xl font-semibold mb-4">Top 10 Diputados con Menos Proyectos</h3>
+            <Bar data={menoresData} options={barOptions} />
+          </div>
+
+          <div className="bg-gray-800 rounded-lg p-6">
+            <h3 className="text-xl font-semibold mb-6">Diputados con Menor Actividad Legislativa</h3>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left">
+                <thead>
+                  <tr className="border-b border-gray-600">
+                    <th className="pb-3 text-gray-300">Posición</th>
+                    <th className="pb-3 text-gray-300">Diputado</th>
+                    <th className="pb-3 text-gray-300">Distrito</th>
+                    <th className="pb-3 text-gray-300">Bloque</th>
+                    <th className="pb-3 text-gray-300">Total Proyectos</th>
+                    <th className="pb-3 text-gray-300">Como Firmante</th>
+                    <th className="pb-3 text-gray-300">Como Cofirmante</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.rankingMenores.map((diputado, index) => (
+                    <tr key={diputado._id} className="border-b border-gray-700">
+                      <td className="py-3 font-bold text-red-400">#{index + 1}</td>
+                      <td className="py-3 font-medium">{diputado.nombre}</td>
+                      <td className="py-3 text-gray-400">{diputado.distrito}</td>
+                      <td className="py-3 text-gray-400">{diputado.bloque}</td>
+                      <td className="py-3 text-red-400 font-bold">{diputado.totalProyectos}</td>
+                      <td className="py-3 text-blue-400">{diputado.proyectosLeyFirmante}</td>
+                      <td className="py-3 text-purple-400">{diputado.proyectosLeyCofirmante}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Vista de Análisis por Distritos */}
+      {viewMode === 'distritos' && (
+        <div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            <div className="bg-gray-800 rounded-lg p-6">
+              <h3 className="text-xl font-semibold mb-4">Top 10 Distritos por Cantidad de Diputados</h3>
+              <Pie data={distritosData} options={pieOptions} />
+            </div>
+
+            <div className="bg-gray-800 rounded-lg p-6">
+              <h3 className="text-xl font-semibold mb-4">Estadísticas por Distrito</h3>
+              <div className="space-y-3">
+                {data.distritos.slice(0, 5).map((distrito) => (
+                  <div key={distrito._id} className="flex justify-between items-center p-3 bg-gray-700 rounded">
+                    <div>
+                      <div className="font-medium">{distrito.distrito}</div>
+                      <div className="text-sm text-gray-400">
+                        {distrito.cantidadDiputados} diputados
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="font-bold text-green-400">
+                        {distrito.totalProyectos} proyectos
+                      </div>
+                      <div className="text-sm text-gray-400">
+                        {distrito.promedioProyectos} promedio
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-gray-800 rounded-lg p-6">
+            <h3 className="text-xl font-semibold mb-6">Todos los Distritos</h3>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left">
+                <thead>
+                  <tr className="border-b border-gray-600">
+                    <th className="pb-3 text-gray-300">Distrito</th>
+                    <th className="pb-3 text-gray-300">Diputados</th>
+                    <th className="pb-3 text-gray-300">Total Proyectos</th>
+                    <th className="pb-3 text-gray-300">Como Firmante</th>
+                    <th className="pb-3 text-gray-300">Como Cofirmante</th>
+                    <th className="pb-3 text-gray-300">Promedio</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.distritos.map((distrito) => (
+                    <tr key={distrito._id} className="border-b border-gray-700">
+                      <td className="py-3 font-medium">{distrito.distrito}</td>
+                      <td className="py-3 text-gray-400">{distrito.cantidadDiputados}</td>
+                      <td className="py-3 text-green-400 font-bold">{distrito.totalProyectos}</td>
+                      <td className="py-3 text-blue-400">{distrito.totalProyectosFirmante}</td>
+                      <td className="py-3 text-purple-400">{distrito.totalProyectosCofirmante}</td>
+                      <td className="py-3 text-yellow-400">{distrito.promedioProyectos}</td>
                     </tr>
                   ))}
                 </tbody>

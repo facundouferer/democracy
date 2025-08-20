@@ -41,6 +41,142 @@ export async function GET() {
       }
     ]);
 
+    // Ranking solo por proyectos como firmante
+    const rankingFirmantes = await Diputado.aggregate([
+      {
+        $match: {
+          proyectosLeyFirmante: { $gt: 0 }
+        }
+      },
+      {
+        $sort: { proyectosLeyFirmante: -1 }
+      },
+      {
+        $project: {
+          nombre: 1,
+          distrito: 1,
+          bloque: 1,
+          proyectosLeyFirmante: { $ifNull: ['$proyectosLeyFirmante', 0] },
+          proyectosLeyCofirmante: { $ifNull: ['$proyectosLeyCofirmante', 0] },
+          foto: 1
+        }
+      },
+      {
+        $limit: 50
+      }
+    ]);
+
+    // Ranking solo por proyectos como cofirmante
+    const rankingCofirmantes = await Diputado.aggregate([
+      {
+        $match: {
+          proyectosLeyCofirmante: { $gt: 0 }
+        }
+      },
+      {
+        $sort: { proyectosLeyCofirmante: -1 }
+      },
+      {
+        $project: {
+          nombre: 1,
+          distrito: 1,
+          bloque: 1,
+          proyectosLeyFirmante: { $ifNull: ['$proyectosLeyFirmante', 0] },
+          proyectosLeyCofirmante: { $ifNull: ['$proyectosLeyCofirmante', 0] },
+          foto: 1
+        }
+      },
+      {
+        $limit: 50
+      }
+    ]);
+
+    // Top 10 diputados con MENOS proyectos (pero que tengan al menos 1)
+    const rankingMenores = await Diputado.aggregate([
+      {
+        $addFields: {
+          totalProyectos: {
+            $add: [
+              { $ifNull: ['$proyectosLeyFirmante', 0] },
+              { $ifNull: ['$proyectosLeyCofirmante', 0] }
+            ]
+          }
+        }
+      },
+      {
+        $match: {
+          totalProyectos: { $gt: 0 }
+        }
+      },
+      {
+        $sort: { totalProyectos: 1 } // Orden ascendente para los menores
+      },
+      {
+        $project: {
+          nombre: 1,
+          distrito: 1,
+          bloque: 1,
+          proyectosLeyFirmante: { $ifNull: ['$proyectosLeyFirmante', 0] },
+          proyectosLeyCofirmante: { $ifNull: ['$proyectosLeyCofirmante', 0] },
+          totalProyectos: 1,
+          foto: 1
+        }
+      },
+      {
+        $limit: 10
+      }
+    ]);
+
+    // Estadísticas por distrito
+    const estadisticasDistritos = await Diputado.aggregate([
+      {
+        $match: {
+          $and: [
+            { distrito: { $exists: true } },
+            { distrito: { $ne: null } },
+            { distrito: { $ne: '' } }
+          ]
+        }
+      },
+      {
+        $group: {
+          _id: '$distrito',
+          cantidadDiputados: { $sum: 1 },
+          totalProyectosFirmante: {
+            $sum: { $ifNull: ['$proyectosLeyFirmante', 0] }
+          },
+          totalProyectosCofirmante: {
+            $sum: { $ifNull: ['$proyectosLeyCofirmante', 0] }
+          }
+        }
+      },
+      {
+        $addFields: {
+          totalProyectos: {
+            $add: ['$totalProyectosFirmante', '$totalProyectosCofirmante']
+          }
+        }
+      },
+      {
+        $sort: { totalProyectos: -1 }
+      },
+      {
+        $project: {
+          distrito: '$_id',
+          cantidadDiputados: 1,
+          totalProyectosFirmante: 1,
+          totalProyectosCofirmante: 1,
+          totalProyectos: 1,
+          promedioProyectos: {
+            $round: [
+              { $divide: ['$totalProyectos', '$cantidadDiputados'] },
+              2
+            ]
+          }
+        }
+      }
+    ]);
+
     // Obtener estadísticas por bloque
     const estadisticasBloques = await Diputado.aggregate([
       {
@@ -124,7 +260,11 @@ export async function GET() {
       success: true,
       data: {
         ranking: rankingDiputados,
+        rankingFirmantes,
+        rankingCofirmantes,
+        rankingMenores,
         bloques: estadisticasBloques,
+        distritos: estadisticasDistritos,
         estadisticas: estadisticasGenerales[0] || {
           totalDiputados: 0,
           totalProyectosFirmante: 0,

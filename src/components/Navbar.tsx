@@ -32,8 +32,8 @@ export default function Navbar() {
             <Link
               href="/"
               className={`px-4 py-2 retro-button text-sm transition-all duration-300 ${isActive('/')
-                  ? 'bg-green-400/20 text-green-300 neon-glow'
-                  : 'text-green-400 hover:bg-green-400/10'
+                ? 'bg-green-400/20 text-green-300 neon-glow'
+                : 'text-green-400 hover:bg-green-400/10'
                 }`}
             >
               <span className="flex items-center space-x-2">
@@ -46,13 +46,27 @@ export default function Navbar() {
             <Link
               href="/ranking"
               className={`px-4 py-2 retro-button text-sm transition-all duration-300 ${isActive('/ranking')
-                  ? 'bg-green-400/20 text-green-300 neon-glow'
-                  : 'text-green-400 hover:bg-green-400/10'
+                ? 'bg-green-400/20 text-green-300 neon-glow'
+                : 'text-green-400 hover:bg-green-400/10'
                 }`}
             >
               <span className="flex items-center space-x-2">
                 <span>[</span>
                 <span>RANKING</span>
+                <span>]</span>
+              </span>
+            </Link>
+
+            <Link
+              href="/estadisticas"
+              className={`px-4 py-2 retro-button text-sm transition-all duration-300 ${isActive('/estadisticas')
+                ? 'bg-green-400/20 text-green-300 neon-glow'
+                : 'text-green-400 hover:bg-green-400/10'
+                }`}
+            >
+              <span className="flex items-center space-x-2">
+                <span>[</span>
+                <span>ESTADÍSTICAS</span>
                 <span>]</span>
               </span>
             </Link>
