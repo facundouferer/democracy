@@ -15,7 +15,6 @@ interface Diputado {
   profesion?: string;
   fechaNacimiento?: string;
   email?: string;
-  ubicacionOficina?: string;
   proyectosLeyFirmante?: number;
   proyectosLeyCofirmante?: number;
 }
@@ -24,7 +23,7 @@ export default function Home() {
   const [diputados, setDiputados] = useState<Diputado[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [limit, setLimit] = useState(5);
+  const [limit, setLimit] = useState(1);
   const [includeDetails, setIncludeDetails] = useState(true);
   const [apiKey, setApiKey] = useState(''); // API Key (debe configurarse)
   const [apiResponse, setApiResponse] = useState<{
@@ -116,6 +115,7 @@ export default function Home() {
                   onChange={(e) => setLimit(parseInt(e.target.value))}
                   className="w-full p-2 border rounded"
                 >
+                  <option value={1}>1 diputado</option>
                   <option value={5}>5 diputados</option>
                   <option value={10}>10 diputados</option>
                   <option value={20}>20 diputados</option>

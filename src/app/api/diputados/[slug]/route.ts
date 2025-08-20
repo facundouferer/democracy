@@ -41,7 +41,6 @@ export async function GET(
       periodo: $('.periodo').text().trim(),
       email: $('a[href^="mailto:"]').attr('href')?.replace('mailto:', '') || '',
       telefono: $('.telefono').text().trim(),
-      despacho: $('.despacho').text().trim(),
       biografia: $('.biografia').text().trim(),
       // Intentar extraer información adicional que pueda estar presente
       comisiones: [] as string[],

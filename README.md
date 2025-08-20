@@ -61,13 +61,67 @@ node scripts/generate-api-keys.js --count 3 --prefix "your-app"
 
 ## 📡 Endpoints
 
-### 1. GET `/api/diputados`
+### 1. GET `/api/diputados` (Scraping en Tiempo Real)
 
-Obtiene la lista completa de diputados con información detallada.
+Obtiene la lista completa de diputados con información detallada mediante scraping directo.
 
 **Parámetros de consulta opcionales:**
 - `limit`: Número de diputados con detalles completos (por defecto: 10)
 - `details`: "false" para obtener solo información básica sin detalles individuales
+
+### 2. GET `/api/sync-diputados` (Sincronización a Base de Datos)
+
+**⚠️ IMPORTANTE: Proceso intensivo que puede tomar varios minutos**
+
+Realiza scraping completo de todos los diputados y guarda la información en MongoDB. Este endpoint:
+- Extrae información de TODOS los diputados
+- Obtiene detalles individuales de cada uno
+- Guarda/actualiza datos en base de datos
+- Marca como inactivos los diputados que ya no están
+
+**Respuesta:**
+```json
+{
+  "success": true,
+  "message": "Sincronización completada exitosamente",
+  "estadisticas": {
+    "totalEncontrados": 257,
+    "totalProcesados": 257,
+    "insertados": 12,
+    "actualizados": 245,
+    "inactivados": 3,
+    "errores": 0,
+    "tiempoFinalizacion": "2025-08-19T23:30:00.000Z"
+  }
+}
+```
+
+### 3. GET `/api/diputados-bd` (Consulta desde Base de Datos)
+
+Consulta los datos almacenados en MongoDB (más rápido que scraping en tiempo real).
+
+**Parámetros de consulta opcionales:**
+- `limit`: Número de resultados por página
+- `page`: Número de página (default: 1)
+- `distrito`: Filtrar por distrito (búsqueda parcial)
+- `bloque`: Filtrar por bloque político (búsqueda parcial)
+- `estado`: "activo" o "inactivo" (default: "activo")
+- `sort`: Campo para ordenar (default: "nombre")
+- `direction`: "asc" o "desc" (default: "asc")
+
+**Ejemplos:**
+```bash
+# Todos los diputados activos
+GET /api/diputados-bd?apikey=YOUR_API_KEY
+
+# Diputados de Buenos Aires, paginado
+GET /api/diputados-bd?apikey=YOUR_API_KEY&distrito=Buenos&limit=20&page=1
+
+# Diputados del Frente de Todos, ordenados por nombre desc
+GET /api/diputados-bd?apikey=YOUR_API_KEY&bloque=Frente&sort=nombre&direction=desc
+```
+
+### 4. GET `/api/diputados/[slug]` (Diputado Individual)
 
 **Ejemplos con autenticación:**
 ```bash
@@ -112,15 +166,38 @@ GET /api/diputados?apikey=YOUR_API_KEY&details=false      # Todos los diputados 
       "profesion": "Abogado",
       "fechaNacimiento": "1962-05-30",
       "email": "sacevedo@diputados.gob.ar",
-      "ubicacionOficina": "Oficina 123, Piso 4",
+      "proyectosLeyFirmante": 15,
+      "proyectosLeyCofirmante": 28
+    }
+  ]
+### Respuesta de Scraping en Tiempo Real:
+
+```json
+{
+  "success": true,
+  "message": "Datos obtenidos con éxito",
+  "count": 257,
+  "detailedCount": 10,
+  "data": [
+    {
+      "foto": "https://www.hcdn.gob.ar/fotos/diputados/...",
+      "nombre": "ACEVEDO, Sergio Alejandro",
+      "link": "https://www.hcdn.gob.ar/diputados/sacevedo",
+      "distrito": "Catamarca",
+      "mandato": "2021-2025",
+      "inicioMandato": "2021-12-10",
+      "finMandato": "2025-12-09", 
+      "bloque": "Frente de Todos",
+      "fotoCompleta": "https://www.hcdn.gob.ar/fotos/diputados/...",
+      "profesion": "Abogado",
+      "fechaNacimiento": "1962-05-30",
+      "email": "sacevedo@diputados.gob.ar",
       "proyectosLeyFirmante": 15,
       "proyectosLeyCofirmante": 28
     }
   ]
 }
 ```
-
-### 2. GET `/api/diputados/[slug]`
 
 Obtiene información detallada de un diputado específico usando su slug (identificador único).
 
@@ -133,23 +210,34 @@ curl -H "X-API-Key: YOUR_API_KEY" \
      "http://localhost:3001/api/diputados/sacevedo"
 ```
 
-## Instalación y Uso
+## 🚀 Instalación y Desarrollo
 
 1. **Instalar dependencias:**
    ```bash
    npm install
    ```
 
-2. **Configurar API Keys para desarrollo:**
+2. **Configurar variables de entorno:**
    ```bash
-   # Generar API Keys seguras
+   # Generar API Keys seguras para desarrollo
    node scripts/generate-api-keys.js --count 3 --prefix "dev"
    
    # Crear archivo de configuración local
    cp .env.local.example .env.local
    
-   # Editar .env.local y reemplazar con las keys generadas
-   # API_KEYS=dev-a1b2c3d4-e5f67890-12345678,dev-9876543210-fedcba09-87654321
+   # Editar .env.local con tus credenciales:
+   ```
+   
+   ```env
+   # API Keys (separadas por comas) - usa las generadas arriba
+   API_KEYS=dev-a1b2c3d4-e5f67890-12345678,dev-9876543210-fedcba09-87654321
+   
+   # MongoDB Connection - IMPORTANTE: database name = "monitor" (tu DB real)
+   # ANTES de usar, configura en MongoDB Atlas:
+   # 1. Network Access → Add IP → "Allow Access from Anywhere" (para desarrollo)
+   # 2. Database Access → Add User → username/password
+   # 3. Reemplaza: username, password, y asegúrate que termine en "/monitor"
+   MONGODB_URI=mongodb+srv://democracy-user:tu_password_real@cluster0.p0tiuea.mongodb.net/monitor?retryWrites=true&w=majority&appName=Cluster0
    ```
 
 3. **Ejecutar en modo desarrollo:**
@@ -157,10 +245,18 @@ curl -H "X-API-Key: YOUR_API_KEY" \
    npm run dev
    ```
 
-4. **Acceder a la aplicación:**
-   - Frontend: http://localhost:3001
-   - API: http://localhost:3001/api/diputados
-   - Info de autenticación: http://localhost:3001/api/auth/info
+4. **Probar la aplicación:**
+   - **Frontend:** http://localhost:3000
+   - **API Scraping:** http://localhost:3000/api/diputados?apikey=YOUR_KEY&limit=5
+   - **API Base de Datos:** http://localhost:3000/api/diputados-bd?apikey=YOUR_KEY&limit=5
+   - **Sincronización:** http://localhost:3000/api/sync-diputados?apikey=YOUR_KEY
+   - **Info de autenticación:** http://localhost:3000/api/auth/info
+
+5. **Primera vez - Poblar la base de datos:**
+   ```bash
+   # Esto toma 10-15 minutos pero solo se hace una vez
+   curl "http://localhost:3000/api/sync-diputados?apikey=dev-a1b2c3d4-e5f67890-12345678"
+   ```
 
 ## 🏗️ Estructura del Proyecto
 
@@ -169,17 +265,42 @@ src/
 ├── app/
 │   ├── api/
 │   │   ├── diputados/
-│   │   │   ├── route.ts          # Endpoint principal
+│   │   │   ├── route.ts          # Scraping directo
 │   │   │   └── [slug]/route.ts   # Endpoint individual
+│   │   ├── diputados-bd/
+│   │   │   └── route.ts          # Consulta desde MongoDB
+│   │   ├── sync-diputados/
+│   │   │   └── route.ts          # Sincronización completa BD
 │   │   └── auth/
 │   │       └── info/route.ts     # Info de autenticación
 │   ├── page.tsx                  # Interfaz frontend
 │   └── layout.tsx
 ├── lib/
-│   └── auth.ts                   # Middleware de autenticación
+│   ├── auth.ts                   # Middleware de autenticación
+│   └── mongodb.ts                # Conexión MongoDB
+├── models/
+│   └── Diputado.ts               # Schema Mongoose
 └── scripts/
     └── generate-api-keys.js      # Generador de API Keys
 ```
+
+## 📊 Comparación de Endpoints
+
+| Característica | `/api/diputados` | `/api/diputados-bd` |
+|----------------|------------------|---------------------|
+| **Fuente de datos** | Scraping directo | Base de datos MongoDB |
+| **Tiempo de respuesta** | 30-60 segundos | < 1 segundo |
+| **Datos** | Siempre actualizados | Actualizados por sync |
+| **Uso recomendado** | Datos críticos actuales | Consultas frecuentes |
+| **Filtros** | Limitados | Avanzados con paginación |
+| **Estadísticas** | No incluye | Estadísticas completas |
+
+## 🔄 Flujo de Trabajo Recomendado
+
+1. **Primera vez:** Ejecutar `/api/sync-diputados` para poblar la BD (10-15 min)
+2. **Uso diario:** Consultar `/api/diputados-bd` para obtener datos rápidos
+3. **Datos críticos:** Usar `/api/diputados` cuando necesites información actualizada al minuto
+4. **Mantenimiento:** Ejecutar sync periódicamente (semanal/mensual)
 
 ## 🔍 Características
 
@@ -198,7 +319,6 @@ src/
 - `profesion`: Profesión del diputado
 - `fechaNacimiento`: Fecha de nacimiento
 - `email`: Correo electrónico oficial
-- `ubicacionOficina`: Ubicación de la oficina
 
 ### Actividad Legislativa (de las páginas de proyectos)
 - `proyectosLeyFirmante`: Cantidad de proyectos de LEY como firmante principal

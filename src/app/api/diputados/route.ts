@@ -15,7 +15,6 @@ interface Diputado {
   profesion?: string;
   fechaNacimiento?: string;
   email?: string;
-  ubicacionOficina?: string;
   proyectosLeyFirmante?: number;
   proyectosLeyCofirmante?: number;
 }
@@ -139,7 +138,6 @@ async function obtenerDetallesDiputado(linkDiputado: string): Promise<{
   fechaNacimiento?: string;
   email?: string;
   fotoCompleta?: string;
-  ubicacionOficina?: string;
   proyectosLeyFirmante?: number;
   proyectosLeyCofirmante?: number;
 }> {
@@ -175,10 +173,6 @@ async function obtenerDetallesDiputado(linkDiputado: string): Promise<{
     const fotoCompleta = $('.detalleDip .box1 img').attr('src') ||
       $('.siteDiputado img').first().attr('src') || '';
 
-    // Extraer ubicación de oficina
-    const ubicacionOficina = $('p:contains("Ubicación de Oficina:") + p').text().trim() ||
-      $('p:contains("Ubicación de Oficina:")').next().text().trim();
-
     // Extraer slug del diputado para obtener proyectos
     const slug = linkDiputado.split('/').filter(Boolean).pop() || '';
 
@@ -191,7 +185,6 @@ async function obtenerDetallesDiputado(linkDiputado: string): Promise<{
       email: email.toLowerCase() || undefined,
       fotoCompleta: fotoCompleta && fotoCompleta.startsWith('http') ? fotoCompleta :
         fotoCompleta ? `https://www.hcdn.gob.ar${fotoCompleta}` : undefined,
-      ubicacionOficina: ubicacionOficina || undefined,
       proyectosLeyFirmante: proyectos.proyectosLeyFirmante,
       proyectosLeyCofirmante: proyectos.proyectosLeyCofirmante
     };
@@ -228,7 +221,7 @@ async function obtenerDetallesDiputado(linkDiputado: string): Promise<{
     const html = await response.text();
     const $ = cheerio.load(html);
 
-    const diputadosBasicos: Omit<Diputado, 'profesion' | 'fechaNacimiento' | 'email' | 'fotoCompleta' | 'ubicacionOficina' | 'proyectosLeyFirmante' | 'proyectosLeyCofirmante'>[] = [];
+    const diputadosBasicos: Omit<Diputado, 'profesion' | 'fechaNacimiento' | 'email' | 'fotoCompleta' | 'proyectosLeyFirmante' | 'proyectosLeyCofirmante'>[] = [];
 
     // Buscamos la tabla de diputados y extraemos la información básica
     $('#tablaDiputados tbody tr').each((index, element) => {
