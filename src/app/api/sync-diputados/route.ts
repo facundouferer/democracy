@@ -239,17 +239,27 @@ async function obtenerProyectosLey(linkDiputado: string, slug: string): Promise<
   }
 }
 
-// Función para procesar fechas de mandato
-function procesarFechasMandato(mandatoTexto: string): { inicioMandato: Date; finMandato: Date } {
-  // Formato esperado: "2021-2025" o similar
-  const años = mandatoTexto.match(/(\d{4})-(\d{4})/);
-
+// Función para procesar fechas de mandato a partir de campos separados
+function procesarFechasMandatoSeparadas(inicioTexto: string, finTexto: string): { inicioMandato: Date; finMandato: Date } {
   let inicioMandato = new Date();
   let finMandato = new Date();
 
-  if (años) {
-    inicioMandato = new Date(`${años[1]}-12-10`); // Fecha típica de asunción
-    finMandato = new Date(`${años[2]}-12-09`);   // Fecha típica de finalización
+  try {
+    // Intentar parsear las fechas directamente si están en formato DD/MM/YYYY
+    if (inicioTexto && inicioTexto.match(/^\d{1,2}\/\d{1,2}\/\d{4}$/)) {
+      const [dia, mes, año] = inicioTexto.split('/');
+      inicioMandato = new Date(parseInt(año), parseInt(mes) - 1, parseInt(dia));
+    }
+
+    if (finTexto && finTexto.match(/^\d{1,2}\/\d{1,2}\/\d{4}$/)) {
+      const [dia, mes, año] = finTexto.split('/');
+      finMandato = new Date(parseInt(año), parseInt(mes) - 1, parseInt(dia));
+    }
+  } catch (error) {
+    console.warn('Error parseando fechas de mandato:', error);
+    // Usar fechas por defecto
+    inicioMandato = new Date();
+    finMandato = new Date();
   }
 
   return { inicioMandato, finMandato };
@@ -295,15 +305,17 @@ export async function GET(request: NextRequest) {
       const nombre = nombreElement.text().trim();
       const link = nombreElement.attr('href') || '';
       const distrito = $row.find('td:nth-child(3)').text().trim();
-      const bloque = $row.find('td:nth-child(4)').text().trim();
-      const mandato = $row.find('td:nth-child(5)').text().trim();
+      const mandato = $row.find('td:nth-child(4)').text().trim();
+      const inicio = $row.find('td:nth-child(5)').text().trim();
+      const fin = $row.find('td:nth-child(6)').text().trim();
+      const bloque = $row.find('td:nth-child(7)').text().trim();
 
       if (nombre && link) {
         const linkCompleto = link.startsWith('http') ? link : `https://www.hcdn.gob.ar${link}`;
         const fotoCompleta = foto.startsWith('http') ? foto : `https://www.hcdn.gob.ar${foto}`;
         const slug = link.split('/').filter(Boolean).pop() || '';
 
-        const { inicioMandato, finMandato } = procesarFechasMandato(mandato);
+        const { inicioMandato, finMandato } = procesarFechasMandatoSeparadas(inicio, fin);
 
         diputadosParaProcesar.push({
           foto: fotoCompleta,
