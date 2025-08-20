@@ -67,33 +67,32 @@ export default function Home() {
   const [sortField, setSortField] = useState('nombre');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
 
-  const fetchDiputados = useCallback(async (resetPage = false) => {
+  const fetchDiputados = useCallback(async () => {
     setLoading(true);
     setError(null);
 
     try {
-      const params = new URLSearchParams();
-      params.append('limit', limit.toString());
-      params.append('page', (resetPage ? 1 : currentPage).toString());
-      params.append('sort', sortField);
-      params.append('direction', sortDirection);
+      const params = new URLSearchParams({
+        page: currentPage.toString(),
+        limit: limit.toString(),
+        sort: sortField,
+        direction: sortDirection,
+      });
 
       if (searchTerm) params.append('search', searchTerm);
       if (selectedDistrito) params.append('distrito', selectedDistrito);
       if (selectedBloque) params.append('bloque', selectedBloque);
 
       const response = await fetch(`/api/diputados-publico?${params}`);
-      const data = await response.json();
+      const result = await response.json();
 
-      if (data.success) {
-        setApiData(data);
-        if (resetPage) setCurrentPage(1);
+      if (result.success) {
+        setApiData(result);
       } else {
-        setError(data.error || 'Error al cargar los datos');
+        setError(result.error || 'Error al cargar los datos');
       }
-    } catch (error) {
+    } catch {
       setError('Error de conexión');
-      console.error('Error:', error);
     } finally {
       setLoading(false);
     }
@@ -102,10 +101,11 @@ export default function Home() {
   // Cargar datos iniciales
   useEffect(() => {
     fetchDiputados();
-  }, [currentPage, limit, sortField, sortDirection]);
+  }, [fetchDiputados]);
 
   const handleSearch = () => {
-    fetchDiputados(true);
+    setCurrentPage(1);
+    fetchDiputados();
   };
 
   const handleSort = (field: string) => {
@@ -122,81 +122,88 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 p-4">
+    <div className="min-h-screen fade-in">
       <div className="max-w-7xl mx-auto">
-        <header className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-white mb-2">
-            🏛️ Diputados de Argentina
-          </h1>
-          <p className="text-lg text-gray-400">
-            Datos actualizados desde la Honorable Cámara de Diputados de la Nación
+        <header className="text-center mb-8 slide-in">
+          <p className="text-sm terminal-cursor" style={{ color: '#00ff41' }}>
+            DATOS SINCRONIZADOS DESDE www.hcdn.gob.ar
           </p>
         </header>
 
         {/* Estadísticas generales */}
         {apiData?.stats && (
-          <div className="bg-gray-800 rounded-lg shadow-md p-6 mb-6 border border-gray-700">
-            <h2 className="text-xl font-semibold mb-4 text-white">📊 Estadísticas Generales</h2>
+          <div className="retro-card rounded-lg p-6 mb-6 neon-border fade-in">
+            <h2 className="text-xl font-semibold mb-4 neon-text"
+              style={{ fontFamily: "'Orbitron', monospace", color: '#00ff41' }}>
+              📊 ESTADÍSTICAS
+            </h2>
             <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-blue-400">
+              <div className="text-center retro-card p-4 border border-green-400/30">
+                <div className="text-2xl font-bold neon-text" style={{ color: '#00d4ff' }}>
                   {apiData.stats.general.totalActivos}
                 </div>
-                <div className="text-sm text-gray-400">Diputados Activos</div>
+                <div className="text-xs" style={{ color: '#00ff41' }}>ACTIVOS</div>
               </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-green-400">
+              <div className="text-center retro-card p-4 border border-green-400/30">
+                <div className="text-2xl font-bold neon-text" style={{ color: '#00ff41' }}>
                   {apiData.stats.general.totalProyectosFirmante}
                 </div>
-                <div className="text-sm text-gray-400">Proyectos Firmados</div>
+                <div className="text-xs" style={{ color: '#00ff41' }}>FIRMADOS</div>
               </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-purple-400">
+              <div className="text-center retro-card p-4 border border-green-400/30">
+                <div className="text-2xl font-bold neon-text" style={{ color: '#ff0080' }}>
                   {apiData.stats.general.totalProyectosCofirmante}
                 </div>
-                <div className="text-sm text-gray-400">Como Cofirmante</div>
+                <div className="text-xs" style={{ color: '#00ff41' }}>COFIRMADOS</div>
               </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-orange-400">
+              <div className="text-center retro-card p-4 border border-green-400/30">
+                <div className="text-2xl font-bold neon-text" style={{ color: '#ffff00' }}>
                   {Math.round(apiData.stats.general.promedioProyectosFirmante || 0)}
                 </div>
-                <div className="text-sm text-gray-400">Promedio Proyectos</div>
+                <div className="text-xs" style={{ color: '#00ff41' }}>PROMEDIO</div>
               </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-red-400">
+              <div className="text-center retro-card p-4 border border-green-400/30">
+                <div className="text-2xl font-bold neon-text" style={{ color: '#8000ff' }}>
                   {apiData.stats.general.diputadosConProyectos}
                 </div>
-                <div className="text-sm text-gray-400">Con Proyectos</div>
+                <div className="text-xs" style={{ color: '#00ff41' }}>CON PROYECTOS</div>
               </div>
             </div>
           </div>
         )}
 
         {/* Filtros y búsqueda */}
-        <div className="bg-gray-800 rounded-lg shadow-md p-6 mb-6 border border-gray-700">
-          <h2 className="text-xl font-semibold mb-4 text-white">🔍 Filtros y Búsqueda</h2>
+        <div className="retro-card rounded-lg p-6 mb-6 neon-border fade-in">
+          <h2 className="text-xl font-semibold mb-4 neon-text"
+            style={{ fontFamily: "'Orbitron', monospace", color: '#00ff41' }}>
+            🔍 TERMINAL DE BÚSQUEDA
+          </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
             <div>
-              <label className="block text-sm font-medium mb-2 text-gray-300">Buscar:</label>
+              <label className="block text-sm font-medium mb-2" style={{ color: '#00d4ff' }}>
+                &gt; BUSCAR:
+              </label>
               <input
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Nombre, distrito, bloque..."
-                className="w-full p-2 border border-gray-600 rounded-md bg-gray-700 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500"
+                className="retro-input w-full p-2 rounded"
                 onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2 text-gray-300">Distrito:</label>
+              <label className="block text-sm font-medium mb-2" style={{ color: '#00d4ff' }}>
+                &gt; DISTRITO:
+              </label>
               <select
                 value={selectedDistrito}
                 onChange={(e) => setSelectedDistrito(e.target.value)}
-                className="w-full p-2 border border-gray-600 rounded-md bg-gray-700 text-white focus:border-blue-500 focus:ring-blue-500"
+                className="retro-select w-full p-2 rounded"
               >
-                <option value="">Todos los distritos</option>
+                <option value="">TODOS</option>
                 {apiData?.stats.porDistrito.slice(0, 10).map((distrito) => (
                   <option key={distrito._id} value={distrito._id}>
                     {distrito._id} ({distrito.count})
@@ -206,13 +213,15 @@ export default function Home() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2 text-gray-300">Bloque:</label>
+              <label className="block text-sm font-medium mb-2" style={{ color: '#00d4ff' }}>
+                &gt; BLOQUE:
+              </label>
               <select
                 value={selectedBloque}
                 onChange={(e) => setSelectedBloque(e.target.value)}
-                className="w-full p-2 border border-gray-600 rounded-md bg-gray-700 text-white focus:border-blue-500 focus:ring-blue-500"
+                className="retro-select w-full p-2 rounded"
               >
-                <option value="">Todos los bloques</option>
+                <option value="">TODOS</option>
                 {apiData?.stats.porBloque.slice(0, 10).map((bloque) => (
                   <option key={bloque._id} value={bloque._id}>
                     {bloque._id} ({bloque.count})
@@ -222,11 +231,13 @@ export default function Home() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2 text-gray-300">Por página:</label>
+              <label className="block text-sm font-medium mb-2" style={{ color: '#00d4ff' }}>
+                &gt; REGISTROS:
+              </label>
               <select
                 value={limit}
                 onChange={(e) => setLimit(parseInt(e.target.value))}
-                className="w-full p-2 border border-gray-600 rounded-md bg-gray-700 text-white focus:border-blue-500 focus:ring-blue-500"
+                className="retro-select w-full p-2 rounded"
               >
                 <option value={10}>10</option>
                 <option value={20}>20</option>
@@ -239,121 +250,151 @@ export default function Home() {
           <button
             onClick={handleSearch}
             disabled={loading}
-            className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white font-bold py-2 px-6 rounded-md transition-colors"
+            className="retro-button px-6 py-2 font-bold transition-all duration-300"
+            style={{ fontFamily: "'Orbitron', monospace" }}
           >
-            {loading ? 'Buscando...' : 'Buscar'}
+            {loading ? '⚡ PROCESANDO...' : '🚀 EJECUTAR BÚSQUEDA'}
           </button>
         </div>
 
         {error && (
-          <div className="bg-red-900/20 border border-red-500 text-red-400 px-4 py-3 rounded mb-4">{error}
+          <div className="retro-card p-4 mb-4 border-2 border-red-500 neon-glow"
+            style={{ background: 'rgba(255, 0, 128, 0.1)' }}>
+            <div className="text-red-400 font-mono">❌ ERROR: {error}</div>
           </div>
         )}
 
         {/* Tabla de diputados */}
         {apiData?.data && (
-          <div className="bg-gray-800 shadow-lg rounded-lg overflow-hidden border border-gray-700">
-            <div className="bg-gray-700 px-6 py-3 border-b border-gray-600 flex justify-between items-center">
-              <h2 className="text-xl font-semibold text-white">
-                Diputados ({apiData.pagination.total} total)
+          <div className="retro-card rounded-lg overflow-hidden neon-border fade-in">
+            <div className="retro-card p-6 border-b-2 border-green-400 flex justify-between items-center">
+              <h2 className="text-xl font-semibold neon-text"
+                style={{ fontFamily: "'Orbitron', monospace", color: '#00ff41' }}>
+                💾 DIPUTADOS ENCONTRADOS ({apiData.pagination.total})
               </h2>
-              <div className="text-sm text-gray-400">
-                Página {apiData.pagination.page} de {apiData.pagination.totalPages}
+              <div className="text-sm" style={{ color: '#00d4ff' }}>
+                [PÁG {apiData.pagination.page}/{apiData.pagination.totalPages}]
               </div>
             </div>
 
             <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-gray-700">
-                  <tr>
-                    <th className="px-4 py-2 text-left text-gray-300">Foto</th>
+              <table className="retro-table w-full">
+                <thead>
+                  <tr style={{ background: 'linear-gradient(135deg, rgba(0, 255, 65, 0.2), rgba(0, 212, 255, 0.2))' }}>
+                    <th className="px-4 py-3 text-left" style={{ color: '#00ff41', fontFamily: "'Orbitron', monospace" }}>
+                      FOTO
+                    </th>
                     <th
-                      className="px-4 py-2 text-left cursor-pointer hover:bg-gray-600 text-gray-300"
+                      className="px-4 py-3 text-left cursor-pointer hover:bg-green-400/20 transition-colors"
                       onClick={() => handleSort('nombre')}
+                      style={{ color: '#00ff41', fontFamily: "'Orbitron', monospace" }}
                     >
-                      Nombre {sortField === 'nombre' && (sortDirection === 'asc' ? '↑' : '↓')}
+                      NOMBRE {sortField === 'nombre' && (sortDirection === 'asc' ? '↑' : '↓')}
                     </th>
                     <th
-                      className="px-4 py-2 text-left cursor-pointer hover:bg-gray-600 text-gray-300"
+                      className="px-4 py-3 text-left cursor-pointer hover:bg-green-400/20 transition-colors"
                       onClick={() => handleSort('distrito')}
+                      style={{ color: '#00ff41', fontFamily: "'Orbitron', monospace" }}
                     >
-                      Distrito {sortField === 'distrito' && (sortDirection === 'asc' ? '↑' : '↓')}
+                      DISTRITO {sortField === 'distrito' && (sortDirection === 'asc' ? '↑' : '↓')}
                     </th>
                     <th
-                      className="px-4 py-2 text-left cursor-pointer hover:bg-gray-600 text-gray-300"
+                      className="px-4 py-3 text-left cursor-pointer hover:bg-green-400/20 transition-colors"
                       onClick={() => handleSort('bloque')}
+                      style={{ color: '#00ff41', fontFamily: "'Orbitron', monospace" }}
                     >
-                      Bloque {sortField === 'bloque' && (sortDirection === 'asc' ? '↑' : '↓')}
+                      BLOQUE {sortField === 'bloque' && (sortDirection === 'asc' ? '↑' : '↓')}
                     </th>
-                    <th className="px-4 py-2 text-left text-gray-300">Profesión</th>
-                    <th className="px-4 py-2 text-left text-gray-300">Proyectos LEY</th>
-                    <th className="px-4 py-2 text-left text-gray-300">Mandato</th>
-                    <th className="px-4 py-2 text-left text-gray-300">Email</th>
+                    <th className="px-4 py-3 text-left" style={{ color: '#00ff41', fontFamily: "'Orbitron', monospace" }}>
+                      PROFESIÓN
+                    </th>
+                    <th className="px-4 py-3 text-left" style={{ color: '#00ff41', fontFamily: "'Orbitron', monospace" }}>
+                      PROYECTOS
+                    </th>
+                    <th className="px-4 py-3 text-left" style={{ color: '#00ff41', fontFamily: "'Orbitron', monospace" }}>
+                      MANDATO
+                    </th>
+                    <th className="px-4 py-3 text-left" style={{ color: '#00ff41', fontFamily: "'Orbitron', monospace" }}>
+                      EMAIL
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
-                  {apiData.data.map((diputado) => (
-                    <tr key={diputado.slug} className="border-b border-gray-700 hover:bg-gray-700">
-                      <td className="px-4 py-2">
-                        <Image
-                          src={diputado.foto}
-                          alt={diputado.nombre}
-                          width={48}
-                          height={48}
-                          className="w-12 h-12 rounded-full object-cover"
-                          onError={() => {
-                            // Error handling for image loading is managed by Next.js
-                          }}
-                          unoptimized
-                        />
+                  {apiData.data.map((diputado, index) => (
+                    <tr key={diputado.slug}
+                      className="border-b border-green-400/30 hover:bg-green-400/10 transition-all duration-200"
+                      style={{
+                        animation: `fadeIn 0.5s ease-in-out ${index * 0.1}s both`
+                      }}>
+                      <td className="px-4 py-3">
+                        <div className="retro-card p-1 border border-green-400/30">
+                          <Image
+                            src={diputado.foto}
+                            alt={diputado.nombre}
+                            width={48}
+                            height={48}
+                            className="w-12 h-12 rounded object-cover"
+                            unoptimized
+                          />
+                        </div>
                       </td>
-                      <td className="px-4 py-2">
-                        <div className="font-medium text-white">
+                      <td className="px-4 py-3">
+                        <div className="font-medium neon-text" style={{ color: '#00d4ff' }}>
                           {diputado.nombre}
                         </div>
                       </td>
-                      <td className="px-4 py-2 text-gray-300">{diputado.distrito}</td>
-                      <td className="px-4 py-2 text-sm text-gray-300">{diputado.bloque}</td>
-                      <td className="px-4 py-2">
-                        <span className={diputado.profesion ? 'text-gray-300' : 'text-gray-500'}>
-                          {diputado.profesion || 'No disponible'}
+                      <td className="px-4 py-3" style={{ color: '#00ff41' }}>
+                        {diputado.distrito}
+                      </td>
+                      <td className="px-4 py-3 text-sm" style={{ color: '#ffff00' }}>
+                        {diputado.bloque}
+                      </td>
+                      <td className="px-4 py-3">
+                        <span style={{ color: diputado.profesion ? '#00d4ff' : '#666' }}>
+                          {diputado.profesion || 'N/A'}
                         </span>
                       </td>
-                      <td className="px-4 py-2">
-                        <div className="text-sm">
+                      <td className="px-4 py-3">
+                        <div className="text-sm space-y-1">
                           <div className="flex items-center space-x-2">
-                            <span className="text-green-400 font-semibold">F:</span>
-                            <span className={diputado.proyectosLeyFirmante ? 'text-green-400 font-medium' : 'text-gray-500'}>
+                            <span className="text-xs font-bold" style={{ color: '#00ff41' }}>F:</span>
+                            <span className="font-medium" style={{
+                              color: diputado.proyectosLeyFirmante ? '#00ff41' : '#666'
+                            }}>
                               {diputado.proyectosLeyFirmante || 0}
                             </span>
                           </div>
                           <div className="flex items-center space-x-2">
-                            <span className="text-blue-400 font-semibold">C:</span>
-                            <span className={diputado.proyectosLeyCofirmante ? 'text-blue-400 font-medium' : 'text-gray-500'}>
+                            <span className="text-xs font-bold" style={{ color: '#00d4ff' }}>C:</span>
+                            <span className="font-medium" style={{
+                              color: diputado.proyectosLeyCofirmante ? '#00d4ff' : '#666'
+                            }}>
                               {diputado.proyectosLeyCofirmante || 0}
                             </span>
                           </div>
                         </div>
                       </td>
-                      <td className="px-4 py-2">
+                      <td className="px-4 py-3">
                         <div className="text-sm">
-                          <div className="font-medium text-gray-300">{diputado.mandato}</div>
-                          <div className="text-gray-500">
+                          <div className="font-medium" style={{ color: '#ff0080' }}>
+                            {diputado.mandato}
+                          </div>
+                          <div style={{ color: '#666', fontSize: '10px' }}>
                             {new Date(diputado.inicioMandato).toLocaleDateString()} -
                             {new Date(diputado.finMandato).toLocaleDateString()}
                           </div>
                         </div>
                       </td>
-                      <td className="px-4 py-2">
+                      <td className="px-4 py-3">
                         {diputado.email ? (
                           <a
                             href={`mailto:${diputado.email}`}
-                            className="text-blue-400 hover:text-blue-300 underline text-sm"
+                            className="text-blue-400 hover:text-blue-300 underline text-sm neon-text"
                           >
                             {diputado.email}
                           </a>
                         ) : (
-                          <span className="text-gray-500 text-sm">No disponible</span>
+                          <span className="text-gray-500 text-sm">N/A</span>
                         )}
                       </td>
                     </tr>
@@ -363,46 +404,59 @@ export default function Home() {
             </div>
 
             {/* Paginación */}
-            <div className="bg-gray-700 px-6 py-3 border-t border-gray-600 flex justify-between items-center">
-              <div className="text-sm text-gray-400">
-                Mostrando {((apiData.pagination.page - 1) * apiData.pagination.limit) + 1} a{' '}
-                {Math.min(apiData.pagination.page * apiData.pagination.limit, apiData.pagination.total)} de{' '}
-                {apiData.pagination.total} resultados
+            <div className="retro-card p-6 border-t-2 border-green-400 flex justify-between items-center">
+              <div className="text-sm" style={{ color: '#00d4ff' }}>
+                &gt; MOSTRANDO {((apiData.pagination.page - 1) * apiData.pagination.limit) + 1} - {Math.min(apiData.pagination.page * apiData.pagination.limit, apiData.pagination.total)} DE {apiData.pagination.total}
               </div>
 
               <div className="flex space-x-2">
                 <button
                   onClick={() => changePage(apiData.pagination.page - 1)}
                   disabled={!apiData.pagination.hasPrevPage || loading}
-                  className="px-3 py-1 border border-gray-600 rounded disabled:opacity-50 disabled:cursor-not-allowed text-white bg-gray-800 hover:bg-gray-700"
+                  className="retro-button px-3 py-1 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Anterior
+                  ◀ PREV
                 </button>
 
-                <span className="px-3 py-1 text-gray-300">
-                  Página {apiData.pagination.page} de {apiData.pagination.totalPages}
+                <span className="px-3 py-1" style={{ color: '#00ff41', fontFamily: "'Orbitron', monospace" }}>
+                  [{apiData.pagination.page}/{apiData.pagination.totalPages}]
                 </span>
 
                 <button
                   onClick={() => changePage(apiData.pagination.page + 1)}
                   disabled={!apiData.pagination.hasNextPage || loading}
-                  className="px-3 py-1 border border-gray-600 rounded disabled:opacity-50 disabled:cursor-not-allowed text-white bg-gray-800 hover:bg-gray-700"
+                  className="retro-button px-3 py-1 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Siguiente
+                  NEXT ▶
                 </button>
               </div>
             </div>
           </div>
         )}
 
-        <footer className="mt-8 text-center text-gray-400">
-          <p>📡 <strong>API Público:</strong> <code className="bg-gray-800 px-2 py-1 rounded">/api/diputados-publico</code></p>
-          <p className="mt-2 text-sm">
-            Datos obtenidos de <a href="https://www.hcdn.gob.ar/diputados/" target="_blank" rel="noopener noreferrer" className="text-blue-400 underline">www.hcdn.gob.ar</a>
-          </p>
-          <p className="text-xs text-gray-500 mt-1">
-            Última actualización: {apiData?.data[0]?.fechaActualizacion ? new Date(apiData.data[0].fechaActualizacion).toLocaleString() : 'No disponible'}
-          </p>
+        <footer className="mt-8 text-center fade-in" style={{ color: '#00d4ff' }}>
+          <div className="retro-card p-6 border border-green-400/30">
+            <p className="mb-2">
+              📡 <strong style={{ color: '#00ff41' }}>API ENDPOINT:</strong>
+              <code className="retro-card px-2 py-1 mx-2 border border-green-400/30" style={{ color: '#ffff00' }}>
+                /api/diputados-publico
+              </code>
+            </p>
+            <p className="text-sm mb-2">
+              🔗 DATOS DESDE: <a
+                href="https://www.hcdn.gob.ar/diputados/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="neon-text hover:text-green-300 underline"
+                style={{ color: '#00ff41' }}
+              >
+                www.hcdn.gob.ar
+              </a>
+            </p>
+            <p className="text-xs terminal-cursor" style={{ color: '#666' }}>
+              ÚLTIMA SYNC: {apiData?.data[0]?.fechaActualizacion ? new Date(apiData.data[0].fechaActualizacion).toLocaleString() : 'N/A'}
+            </p>
+          </div>
         </footer>
       </div>
     </div>

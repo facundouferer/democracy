@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
     await connectDB();
 
     // Construir filtros
-    const filtros: any = {
+    const filtros: Record<string, unknown> = {
       estado: 'activo' // Solo diputados activos por defecto
     };
 

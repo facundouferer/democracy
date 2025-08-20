@@ -213,37 +213,43 @@ export default function RankingPage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white mb-4">
-          Ranking de Proyectos Legislativos
+    <div className="container mx-auto px-4 py-8 fade-in">
+      <div className="mb-8 slide-in">
+        <h1 className="text-4xl font-bold neon-text mb-4 glitch"
+          data-text="📊 RANKING SYSTEM v2.0"
+          style={{
+            fontFamily: "'Orbitron', monospace",
+            color: '#00ff41',
+            textShadow: '0 0 20px #00ff41'
+          }}>
+          📊 RANKING SYSTEM v2.0
         </h1>
 
         {/* Estadísticas generales */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          <div className="bg-gray-800 rounded-lg p-6">
-            <div className="text-2xl font-bold text-blue-400">
+          <div className="retro-card rounded-lg p-6 neon-border">
+            <div className="text-3xl font-bold neon-text" style={{ color: '#00d4ff' }}>
               {data.estadisticas.totalDiputados}
             </div>
-            <div className="text-gray-400">Total Diputados</div>
+            <div style={{ color: '#00ff41', fontSize: '12px' }}>TOTAL DIPUTADOS</div>
           </div>
-          <div className="bg-gray-800 rounded-lg p-6">
-            <div className="text-2xl font-bold text-green-400">
+          <div className="retro-card rounded-lg p-6 neon-border">
+            <div className="text-3xl font-bold neon-text" style={{ color: '#00ff41' }}>
               {data.estadisticas.totalProyectosGeneral}
             </div>
-            <div className="text-gray-400">Total Proyectos</div>
+            <div style={{ color: '#00ff41', fontSize: '12px' }}>TOTAL PROYECTOS</div>
           </div>
-          <div className="bg-gray-800 rounded-lg p-6">
-            <div className="text-2xl font-bold text-purple-400">
+          <div className="retro-card rounded-lg p-6 neon-border">
+            <div className="text-3xl font-bold neon-text" style={{ color: '#ff0080' }}>
               {data.estadisticas.totalProyectosFirmante}
             </div>
-            <div className="text-gray-400">Como Firmante</div>
+            <div style={{ color: '#00ff41', fontSize: '12px' }}>COMO FIRMANTE</div>
           </div>
-          <div className="bg-gray-800 rounded-lg p-6">
-            <div className="text-2xl font-bold text-yellow-400">
+          <div className="retro-card rounded-lg p-6 neon-border">
+            <div className="text-3xl font-bold neon-text" style={{ color: '#ffff00' }}>
               {data.estadisticas.totalProyectosCofirmante}
             </div>
-            <div className="text-gray-400">Como Cofirmante</div>
+            <div style={{ color: '#00ff41', fontSize: '12px' }}>COMO COFIRMANTE</div>
           </div>
         </div>
 
@@ -251,26 +257,22 @@ export default function RankingPage() {
         <div className="flex space-x-4 mb-8">
           <button
             onClick={() => setViewMode('ranking')}
-            className={`px-6 py-2 rounded-lg font-medium transition-colors ${viewMode === 'ranking'
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+            className={`retro-button px-6 py-3 font-bold transition-all duration-300 ${viewMode === 'ranking' ? 'neon-glow' : ''
               }`}
+            style={{ fontFamily: "'Orbitron', monospace" }}
           >
-            Ranking Individual
+            💾 RANKING INDIVIDUAL
           </button>
           <button
             onClick={() => setViewMode('bloques')}
-            className={`px-6 py-2 rounded-lg font-medium transition-colors ${viewMode === 'bloques'
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+            className={`retro-button px-6 py-3 font-bold transition-all duration-300 ${viewMode === 'bloques' ? 'neon-glow' : ''
               }`}
+            style={{ fontFamily: "'Orbitron', monospace" }}
           >
-            Análisis por Bloques
+            🚀 ANÁLISIS POR BLOQUES
           </button>
         </div>
-      </div>
-
-      {viewMode === 'ranking' && (
+      </div>      {viewMode === 'ranking' && (
         <div>
           {/* Gráfico de barras */}
           <div className="bg-gray-800 rounded-lg p-6 mb-8">
