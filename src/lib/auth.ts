@@ -1,44 +1,47 @@
 import { NextRequest } from 'next/server';
 
-// Obtener API Keys desde variables de entorno
+// Obtener API Keys desde variables de entorno (en tiempo de ejecución)
 function getValidApiKeys(): string[] {
   const apiKeys = process.env.API_KEYS;
-
   if (!apiKeys) {
-    // En desarrollo, mostrar error claro para configurar las keys
-    if (process.env.NODE_ENV === 'development') {
-      throw new Error('API_KEYS no configurado. Crea un archivo .env.local con: API_KEYS=tu-key-1,tu-key-2');
-    }
-
-    // En producción, es obligatorio tener API_KEYS configurado
-    throw new Error('API_KEYS no configurado en variables de entorno');
-  }  // Dividir por comas y limpiar espacios
+    // No lanzar durante import/build; devolver lista vacía y manejar autorización en tiempo de ejecución
+    return [];
+  }
   return apiKeys.split(',').map(key => key.trim()).filter(key => key.length > 0);
 }
 
-const VALID_API_KEYS = getValidApiKeys();
-
 export function validateApiKey(request: NextRequest): boolean {
+  const validKeys = getValidApiKeys();
+
+  // Si no hay keys configuradas, siempre devolver false (401) — no lanzar error para permitir build en Vercel
+  if (validKeys.length === 0) {
+    return false;
+  }
+
   // Verificar en el header Authorization
   const authHeader = request.headers.get('authorization');
   if (authHeader && authHeader.startsWith('Bearer ')) {
     const apiKey = authHeader.substring(7);
-    if (VALID_API_KEYS.includes(apiKey)) {
+    if (validKeys.includes(apiKey)) {
       return true;
     }
   }
 
   // Verificar en el header X-API-Key
   const apiKeyHeader = request.headers.get('x-api-key');
-  if (apiKeyHeader && VALID_API_KEYS.includes(apiKeyHeader)) {
+  if (apiKeyHeader && validKeys.includes(apiKeyHeader)) {
     return true;
   }
 
   // Verificar en query parameter
-  const url = new URL(request.url);
-  const apiKeyParam = url.searchParams.get('apikey') || url.searchParams.get('api_key');
-  if (apiKeyParam && VALID_API_KEYS.includes(apiKeyParam)) {
-    return true;
+  try {
+    const url = new URL(request.url);
+    const apiKeyParam = url.searchParams.get('apikey') || url.searchParams.get('api_key');
+    if (apiKeyParam && validKeys.includes(apiKeyParam)) {
+      return true;
+    }
+  } catch {
+    // Si la URL no se puede parsear, no autorizamos
   }
 
   return false;
