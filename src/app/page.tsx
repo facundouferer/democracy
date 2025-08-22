@@ -126,7 +126,7 @@ export default function Home() {
       <div className="max-w-7xl mx-auto">
         <header className="text-center mb-8 slide-in">
           <p className="text-sm terminal-cursor" style={{ color: '#00ff41' }}>
-            DATOS SINCRONIZADOS DESDE www.hcdn.gob.ar
+            DATOS DE LA CAMARA DE DIPUTADOS DE ARGENTINA
           </p>
         </header>
 
@@ -443,7 +443,7 @@ export default function Home() {
               </code>
             </p>
             <p className="text-sm mb-2">
-              🔗 DATOS DESDE: <a
+              🔗 DATOS OFICIALES DE: <a
                 href="https://www.hcdn.gob.ar/diputados/"
                 target="_blank"
                 rel="noopener noreferrer"
