@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 
 interface Diputado {
   _id?: string;
@@ -339,9 +340,11 @@ export default function Home() {
                         </div>
                       </td>
                       <td className="px-4 py-3">
-                        <div className="font-medium neon-text" style={{ color: '#00d4ff' }}>
-                          {diputado.nombre}
-                        </div>
+                        <Link href={`/diputado/${diputado.slug}`}>
+                          <div className="font-medium neon-text hover:text-green-300 cursor-pointer transition-colors duration-200" style={{ color: '#00d4ff' }}>
+                            {diputado.nombre}
+                          </div>
+                        </Link>
                       </td>
                       <td className="px-4 py-3" style={{ color: '#00ff41' }}>
                         {diputado.distrito}
