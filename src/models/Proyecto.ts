@@ -3,8 +3,7 @@ import mongoose from 'mongoose';
 const ProyectoSchema = new mongoose.Schema({
   expediente: {
     type: String,
-    required: true,
-    index: true
+    required: true
   },
   tipo: {
     type: String,

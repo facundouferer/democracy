@@ -84,7 +84,7 @@ async function obtenerProyectosPagina(slug: string, tipoFirmante: 'firmante' | '
         if (isNaN(fecha.getTime())) {
           throw new Error('Fecha inválida');
         }
-      } catch (error) {
+      } catch {
         return;
       }
 
@@ -102,7 +102,7 @@ async function obtenerProyectosPagina(slug: string, tipoFirmante: 'firmante' | '
         tipoFirmante
       });
 
-    } catch (error) {
+    } catch {
       // Continuar con la siguiente fila
     }
   });

@@ -99,7 +99,7 @@ export default function PerfilDiputadoPage() {
         setProyectos(dataProyectos.data || []);
 
         // Extraer tipos únicos para el filtro
-        const tipos = [...new Set(dataProyectos.data?.map((p: Proyecto) => p.tipo) || [])].sort();
+        const tipos = [...new Set(dataProyectos.data?.map((p: Proyecto) => p.tipo as string) || [])].sort() as string[];
         setTiposDisponibles(tipos);
 
       } catch (err) {
@@ -396,8 +396,8 @@ export default function PerfilDiputadoPage() {
                       <td className="p-2">{new Date(proyecto.fecha).toLocaleDateString()}</td>
                       <td className="p-2">
                         <span className={`px-2 py-1 rounded text-xs ${proyecto.tipoFirmante === 'firmante'
-                            ? 'bg-blue-400/20 text-blue-300'
-                            : 'bg-purple-400/20 text-purple-300'
+                          ? 'bg-blue-400/20 text-blue-300'
+                          : 'bg-purple-400/20 text-purple-300'
                           }`}>
                           {proyecto.tipoFirmante}
                         </span>
