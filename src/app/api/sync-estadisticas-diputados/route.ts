@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
     for (const estadistica of estadisticasProyectos) {
       try {
         const slug = estadistica._id;
-        
+
         // Calcular conteos por tipo
         const firmante = estadistica.proyectos.find((p: ProyectoTipo) => p.tipo === 'firmante')?.cantidad || 0;
         const cofirmante = estadistica.proyectos.find((p: ProyectoTipo) => p.tipo === 'cofirmante')?.cantidad || 0;        // Actualizar el diputado
