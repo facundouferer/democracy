@@ -1,6 +1,7 @@
 import { requireAdminSession } from '@/lib/admin-auth';
 import connectDB from '@/lib/mongodb';
 import { scrapeDiputados } from '@/lib/scrape-diputados';
+import { assertSafeGetOrigin } from '@/lib/security';
 import Diputado from '@/models/Diputado';
 
 export const runtime = 'nodejs';
@@ -10,10 +11,14 @@ function buildEventMessage(event: string, payload: unknown): string {
   return `event: ${event}\ndata: ${JSON.stringify(payload)}\n\n`;
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    assertSafeGetOrigin(request);
     await requireAdminSession();
-  } catch {
+  } catch (error) {
+    if (error instanceof Error && error.message === 'FORBIDDEN_CSRF') {
+      return new Response('Origen inválido', { status: 403 });
+    }
     return new Response('No autorizado', { status: 401 });
   }
 

@@ -1,7 +1,9 @@
 import { load } from 'cheerio';
+import { isAllowedHost } from '@/lib/security';
 
 const SENADO_BASE_URL = 'https://www.senado.gob.ar';
 const SENADO_LIST_URL = `${SENADO_BASE_URL}/senadores/listados/listaSenadoRes`;
+const SENADO_ALLOWED_HOSTS = ['senado.gob.ar', 'www.senado.gob.ar'];
 
 export type ScrapedSenador = {
   nombre: string;
@@ -63,6 +65,10 @@ function getLastProjectsPage(html: string): number {
 }
 
 async function fetchProjectsCountForSenador(profileUrl: string): Promise<number> {
+  if (!isAllowedHost(profileUrl, SENADO_ALLOWED_HOSTS)) {
+    return 0;
+  }
+
   const firstResponse = await fetch(profileUrl, {
     headers: {
       'User-Agent': 'Mozilla/5.0 (compatible; DemocracyBot/1.0)',
@@ -82,7 +88,10 @@ async function fetchProjectsCountForSenador(profileUrl: string): Promise<number>
     return firstPageCount;
   }
 
-  const lastResponse = await fetch(`${profileUrl}?ProyectosSenador=${lastPage}`, {
+  const lastPageUrl = new URL(profileUrl);
+  lastPageUrl.searchParams.set('ProyectosSenador', String(lastPage));
+
+  const lastResponse = await fetch(lastPageUrl.toString(), {
     headers: {
       'User-Agent': 'Mozilla/5.0 (compatible; DemocracyBot/1.0)',
     },
@@ -162,6 +171,10 @@ export async function scrapeSenadores(): Promise<ScrapedSenador[]> {
     const foto = toAbsoluteUrl(fotoNode.attr('data-src') || fotoNode.attr('src'));
 
     if (!nombre || !distrito || !mandato || !foto || !link) {
+      return;
+    }
+
+    if (!isAllowedHost(link, SENADO_ALLOWED_HOSTS)) {
       return;
     }
 

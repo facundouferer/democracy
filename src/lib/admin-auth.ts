@@ -4,10 +4,13 @@ import { cookies } from 'next/headers';
 const COOKIE_NAME = 'admin_session';
 const SESSION_HOURS = 12;
 
-const SESSION_SECRET =
-  process.env.ADMIN_SESSION_SECRET ??
-  process.env.API_KEYS?.split(',')[0]?.trim() ??
-  'dev-admin-secret-change-me';
+function getSessionSecret(): string {
+  const secret = process.env.ADMIN_SESSION_SECRET;
+  if (!secret) {
+    throw new Error('Falta ADMIN_SESSION_SECRET en variables de entorno');
+  }
+  return secret;
+}
 
 type SessionPayload = {
   email: string;
@@ -29,13 +32,25 @@ function base64UrlDecode(value: string): string {
 }
 
 function sign(data: string): string {
+  const sessionSecret = getSessionSecret();
   return crypto
-    .createHmac('sha256', SESSION_SECRET)
+    .createHmac('sha256', sessionSecret)
     .update(data)
     .digest('base64')
     .replace(/=/g, '')
     .replace(/\+/g, '-')
     .replace(/\//g, '_');
+}
+
+function safeEqualsBase64Url(a: string, b: string): boolean {
+  const bufA = Buffer.from(a);
+  const bufB = Buffer.from(b);
+
+  if (bufA.length !== bufB.length) {
+    return false;
+  }
+
+  return crypto.timingSafeEqual(bufA, bufB);
 }
 
 function createToken(email: string): string {
@@ -56,7 +71,7 @@ function verifyToken(token: string): SessionPayload | null {
   }
 
   const expected = sign(payloadEncoded);
-  if (expected !== signature) {
+  if (!safeEqualsBase64Url(expected, signature)) {
     return null;
   }
 
@@ -75,7 +90,7 @@ export async function createAdminSession(email: string): Promise<void> {
   const cookieStore = await cookies();
   cookieStore.set(COOKIE_NAME, createToken(email), {
     httpOnly: true,
-    sameSite: 'lax',
+    sameSite: 'strict',
     secure: process.env.NODE_ENV === 'production',
     path: '/',
     maxAge: SESSION_HOURS * 60 * 60,

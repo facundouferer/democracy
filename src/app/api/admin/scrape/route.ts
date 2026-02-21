@@ -3,10 +3,12 @@ import { NextResponse } from 'next/server';
 import { requireAdminSession } from '@/lib/admin-auth';
 import connectDB from '@/lib/mongodb';
 import { scrapeDiputados } from '@/lib/scrape-diputados';
+import { assertSameOrigin } from '@/lib/security';
 import Diputado from '@/models/Diputado';
 
-export async function POST() {
+export async function POST(request: Request) {
   try {
+    assertSameOrigin(request);
     await requireAdminSession();
     await connectDB();
 
@@ -44,6 +46,10 @@ export async function POST() {
       fecha: now.toISOString(),
     });
   } catch (error) {
+    if (error instanceof Error && error.message === 'FORBIDDEN_CSRF') {
+      return NextResponse.json({ ok: false, message: 'Origen inválido' }, { status: 403 });
+    }
+
     if (error instanceof Error && error.message === 'UNAUTHORIZED') {
       return NextResponse.json({ ok: false, message: 'No autorizado' }, { status: 401 });
     }

@@ -1,7 +1,9 @@
 import { load } from 'cheerio';
+import { isAllowedHost } from '@/lib/security';
 
 const BASE_URL = 'https://www.diputados.gov.ar';
 const LIST_URL = `${BASE_URL}/diputados/`;
+const DIPUTADOS_ALLOWED_HOSTS = ['diputados.gov.ar', 'www.diputados.gov.ar'];
 
 export type ScrapedDiputado = {
   nombre: string;
@@ -188,6 +190,10 @@ function buildProjectsUrl(profileUrl: string): string {
 }
 
 async function fetchProjectCountForDiputado(profileUrl: string): Promise<number> {
+  if (!isAllowedHost(profileUrl, DIPUTADOS_ALLOWED_HOSTS)) {
+    return 0;
+  }
+
   const projectsUrl = buildProjectsUrl(profileUrl);
   const response = await fetchWithRetry(projectsUrl);
 
@@ -206,6 +212,10 @@ async function fetchProjectCountForDiputado(profileUrl: string): Promise<number>
 async function fetchProfileDetailsForDiputado(
   profileUrl: string
 ): Promise<Pick<ScrapedDiputado, 'profesion' | 'fecha_nacimiento' | 'foto'>> {
+  if (!isAllowedHost(profileUrl, DIPUTADOS_ALLOWED_HOSTS)) {
+    return { profesion: '', fecha_nacimiento: '', foto: '' };
+  }
+
   const response = await fetchWithRetry(profileUrl);
 
   const html = await response.text();
@@ -282,6 +292,10 @@ export async function scrapeDiputados(options: ScrapeOptions = {}): Promise<Scra
     const { apellido, nombre } = splitNombreCompleto(nombreCompleto);
 
     if (!nombre || !apellido || !distrito || !bloque || !mandato || !foto || !link || !slug) {
+      return;
+    }
+
+    if (!isAllowedHost(link, DIPUTADOS_ALLOWED_HOSTS)) {
       return;
     }
 
