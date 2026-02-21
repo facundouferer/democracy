@@ -1,65 +1,45 @@
-import mongoose, { Schema, Document } from 'mongoose';
+import mongoose, { Document, Schema } from 'mongoose';
 
 export interface IDiputado extends Document {
-  // Información básica
-  foto: string;
   nombre: string;
-  link: string;
+  apellido: string;
   distrito: string;
-  mandato: string;
-  inicioMandato: Date;
-  finMandato: Date;
   bloque: string;
-
-  // Detalles individuales
-  fotoCompleta?: string;
+  mandato: string;
   profesion?: string;
-  fechaNacimiento?: Date;
-  email?: string;
-
-  // Actividad legislativa
-  proyectosLeyFirmante?: number;
-  proyectosLeyCofirmante?: number;
-
-  // Metadatos
-  slug: string; // Identificador único extraído del link
+  fecha_nacimiento?: string;
+  total_proyectos: number;
+  foto: string;
+  link: string;
+  slug: string;
   fechaActualizacion: Date;
-  estado: 'activo' | 'inactivo';
 }
 
-const DiputadoSchema: Schema = new Schema({
-  // Información básica
-  foto: { type: String, required: true },
-  nombre: { type: String, required: true, index: true },
-  link: { type: String, required: true, unique: true },
-  distrito: { type: String, required: true, index: true },
-  mandato: { type: String, required: true },
-  inicioMandato: { type: Date, required: true },
-  finMandato: { type: Date, required: true },
-  bloque: { type: String, required: true, index: true },
+const DiputadoSchema = new Schema<IDiputado>(
+  {
+    nombre: { type: String, required: true, index: true },
+    apellido: { type: String, required: true, index: true },
+    distrito: { type: String, required: true, index: true },
+    bloque: { type: String, required: true, index: true },
+    mandato: { type: String, required: true, index: true },
+    profesion: { type: String, default: '' },
+    fecha_nacimiento: { type: String, default: '' },
+    total_proyectos: { type: Number, required: true, default: 0, index: true },
+    foto: { type: String, required: true },
+    link: { type: String, required: true, unique: true },
+    slug: { type: String, required: true, unique: true, index: true },
+    fechaActualizacion: { type: Date, default: Date.now, index: true },
+  },
+  {
+    timestamps: true,
+    collection: 'diputados-nacionales',
+  }
+);
 
-  // Detalles individuales
-  fotoCompleta: { type: String },
-  profesion: { type: String },
-  fechaNacimiento: { type: Date },
-  email: { type: String, lowercase: true },
-
-  // Actividad legislativa
-  proyectosLeyFirmante: { type: Number, default: 0 },
-  proyectosLeyCofirmante: { type: Number, default: 0 },
-
-  // Metadatos
-  slug: { type: String, required: true, unique: true, index: true },
-  fechaActualizacion: { type: Date, default: Date.now },
-  estado: { type: String, enum: ['activo', 'inactivo'], default: 'activo' }
-}, {
-  timestamps: true,
-  collection: 'diputados'
-});
-
-// Índices compuestos para consultas eficientes
+DiputadoSchema.index({ apellido: 1, nombre: 1 });
 DiputadoSchema.index({ distrito: 1, bloque: 1 });
-DiputadoSchema.index({ mandato: 1, estado: 1 });
-DiputadoSchema.index({ fechaActualizacion: -1 });
 
-export default mongoose.models.Diputado || mongoose.model<IDiputado>('Diputado', DiputadoSchema);
+const Diputado =
+  mongoose.models.Diputado || mongoose.model<IDiputado>('Diputado', DiputadoSchema);
+
+export default Diputado;

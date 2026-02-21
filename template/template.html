@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Grand Council of Heroes - Medieval RPG Hero Roster</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=MedievalSharp&amp;family=Cinzel:wght@400;700&amp;family=IM+Fell+English+SC&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+<script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#b8860b", // Dark Goldenrod
+              "background-light": "#f4e4bc", // Aged Parchment
+              "background-dark": "#1a1a1a",  // Dark Stone
+              "gold-accent": "#ffd700",
+              "deep-red": "#8b0000",
+            },
+            fontFamily: {
+              display: ["MedievalSharp", "serif"],
+              gothic: ["Cinzel", "serif"],
+              body: ["IM Fell English SC", "serif"],
+            },
+            borderRadius: {
+              DEFAULT: "0.5rem",
+            },
+          },
+        },
+      };
+    </script>
+<style>.parchment-texture {
+    background-image: url(https://lh3.googleusercontent.com/aida-public/AB6AXuAtORVn6jOYJvsaxvxmbiLrRcFUuySJ5T4rJjUjHfaW20h5m9K3-qQDZRwHeP1eEv6XIHu_cMsl4WI0cl-BxlxkXm--pCiAaAKr-c4T1DmG0zzXwVP75k5n0IcE6W7SST3t9mMWTMhJVsP_wWas4Ex1FwHEwDWjh7FcHeFSaFurnvWPU3Gx_gWdB0tZ-Y0v7fJY5EVOMELAfSATIs0vKqsy20628QO0pWKKomGsGTPWj-xRZuThvy9ksniVEGSBy6hW9R-EPTH5oO4)
+    }
+.stone-texture {
+    background-image: url(https://lh3.googleusercontent.com/aida-public/AB6AXuAS2KPhfHnEHgZFo6yEyVGzKANtwZGd78QX0tiG1BAt77SbGVrl0rIISQfYD8yJGKtK7vY0OpjOdsmW7ycXws5zsWjnEfV4N3kr4joS2Acw3lhs6tEFjYhyGbmv-tflHhUyGFTyk_uI5ChHhhisgTFA2yHu5TerHxDdT9MtHDwg0IpLFiKwjC5myhYT4gQGt8ZJGkw6yz8vRIFdLWdC2xbnX0HAmRGtUQmVvXY4HMxDGgT0QgxS0zHnWPNVxveUccrCMlKDqN-3mNA)
+    }
+.gold-border {
+    border: 4px solid;
+    border-image: linear-gradient(to bottom, #cfb53b, #8b7500, #cfb53b) 1
+    }
+.hero-card:hover {
+    transform: translatey(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5)
+    }
+.hero-card {
+    transition: all 0.3s ease
+    }</style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-stone-800 dark:text-stone-200 min-h-screen parchment-texture dark:stone-texture font-body">
+<header class="max-w-7xl mx-auto px-4 pt-10 pb-6">
+<div class="relative bg-stone-900/10 dark:bg-black/40 border-4 border-double border-primary p-8 rounded-lg shadow-2xl overflow-hidden">
+<div class="absolute top-0 left-0 text-primary p-1"><span class="material-icons text-4xl">local_florist</span></div>
+<div class="absolute top-0 right-0 text-primary p-1 scale-x-[-1]"><span class="material-icons text-4xl">local_florist</span></div>
+<div class="absolute bottom-0 left-0 text-primary p-1 scale-y-[-1]"><span class="material-icons text-4xl">local_florist</span></div>
+<div class="absolute bottom-0 right-0 text-primary p-1 scale-x-[-1] scale-y-[-1]"><span class="material-icons text-4xl">local_florist</span></div>
+<div class="text-center relative z-10">
+<p class="text-deep-red dark:text-gold-accent font-gothic tracking-[0.2em] text-sm mb-2 uppercase">Empire of Argentina</p>
+<h1 class="text-5xl md:text-7xl font-display text-stone-900 dark:text-white drop-shadow-lg">Grand Council of Heroes</h1>
+</div>
+</div>
+</header>
+<main class="max-w-7xl mx-auto px-4 pb-20">
+<div class="flex flex-col md:flex-row justify-between items-center mb-10 px-4 border-b-2 border-stone-400/30 pb-4">
+<h2 class="font-display text-3xl text-deep-red dark:text-primary mb-4 md:mb-0">Current Hero Roster</h2>
+<div class="flex items-center gap-6">
+<div class="flex items-center text-stone-600 dark:text-stone-400">
+<span class="material-icons mr-2">group</span>
+<span class="font-gothic">257 Champions Enlisted</span>
+</div>
+<button class="p-2 bg-stone-800 text-gold-accent rounded-full hover:bg-stone-700 transition-colors border border-primary" onclick="document.documentElement.classList.toggle('dark')">
+<span class="material-icons">brightness_4</span>
+</button>
+</div>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+<div class="hero-card bg-white/60 dark:bg-stone-900/80 border-2 border-stone-300 dark:border-stone-700 p-1 relative rounded-sm shadow-lg overflow-hidden group">
+<div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-deep-red via-primary to-deep-red"></div>
+<div class="p-4 flex flex-col items-center">
+<div class="relative w-40 h-40 mb-6 group-hover:scale-105 transition-transform">
+<div class="absolute -inset-2 border-4 border-primary rounded-full opacity-50"></div>
+<div class="absolute -inset-1 border-2 border-gold-accent/40 rounded-full"></div>
+<img alt="Portrait of Hilda the Healer" class="w-full h-full object-cover rounded-full border-4 border-stone-800 dark:border-stone-200 grayscale-[0.3] group-hover:grayscale-0 transition-all shadow-inner" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDWVyxV6xk_PlDfrwHhjihvKNf5m-mpB6lUSwRKXLD8_KAhshsY_OMrXvBAJiokc9nhfI3hQwP2WZUfkVjiiYC52C13fNb2DNYHbR15yvKMwbbqDQL79hS6apoyiBnqr2r651sZg3PDZpO3DlxjQicZrtIKZiB_H3nEHLwJhk4EPEs_5P6FzVqfg_AajryaiGkK8RMdnyX6O7jg1xm1ta3uxuLYF6JK2TaQfujhnvhl6u3DbnMqawQ0Y-oumWtFUzEJTXDMXJxkjy0"/>
+</div>
+<h3 class="font-display text-2xl text-deep-red dark:text-primary text-center mb-4">Aguirre, Hilda</h3>
+<div class="w-full space-y-2 text-sm font-gothic">
+<div class="flex justify-between border-b border-stone-400/20 py-1">
+<span class="text-stone-500 dark:text-stone-400">Kingdom:</span>
+<span class="font-bold">La Rioja</span>
+</div>
+<div class="flex justify-between border-b border-stone-400/20 py-1">
+<span class="text-stone-500 dark:text-stone-400">Guild:</span>
+<span class="font-bold text-blue-800 dark:text-blue-400">Unión por la Patria</span>
+</div>
+<div class="flex justify-between border-b border-stone-400/20 py-1">
+<span class="text-stone-500 dark:text-stone-400">Level:</span>
+<span class="font-bold">2023-2027</span>
+</div>
+<div class="flex justify-between border-b border-stone-400/20 py-1">
+<span class="text-stone-500 dark:text-stone-400">Class:</span>
+<span class="font-bold text-green-700 dark:text-green-400">Arch-Healer</span>
+</div>
+<div class="flex justify-between py-1">
+<span class="text-stone-500 dark:text-stone-400">Quests:</span>
+<span class="font-bold text-amber-600">1000 Completed</span>
+</div>
+</div>
+<button class="mt-6 w-full py-2 bg-deep-red hover:bg-red-800 text-white font-gothic text-xs uppercase tracking-widest transition-colors flex items-center justify-center gap-2">
+<span class="material-icons text-sm">visibility</span>
+                        Inspect Legend
+                    </button>
+</div>
+</div>
+<div class="hero-card bg-white/60 dark:bg-stone-900/80 border-2 border-stone-300 dark:border-stone-700 p-1 relative rounded-sm shadow-lg overflow-hidden group">
+<div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-stone-500 via-primary to-stone-500"></div>
+<div class="p-4 flex flex-col items-center">
+<div class="relative w-40 h-40 mb-6 group-hover:scale-105 transition-transform">
+<div class="absolute -inset-2 border-4 border-primary rounded-full opacity-50"></div>
+<img alt="Portrait of Guillermo the Justiciar" class="w-full h-full object-cover rounded-full border-4 border-stone-800 dark:border-stone-200 grayscale-[0.3] group-hover:grayscale-0 transition-all shadow-inner" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCwckV7yduvvepiWtfLHkwuM5NMVWAwKvDfOdM5Ks0N1usY_dYKMX7zobHrWgI6weX_O8G7uYUB7qrBJZE28u8Hbakoqoc-VL3URzmuTtej2XOwB9oVB0P6nYucu7FlwejbJ2y1eTlnp7ZHqbUG_5AP6s4KlP9UsFF6Ok3PxHWCLj4qKOaFLwRUMkdXLIKBCddp6z5MNS5piWcrN3exy9qAcHZ-jziuBNJe3eKMWAzCLmnutkc_-r75_6E3Y0DRUij1oguTNoKobtQ"/>
+</div>
+<h3 class="font-display text-2xl text-deep-red dark:text-primary text-center mb-4">Agüero, Guillermo</h3>
+<div class="w-full space-y-2 text-sm font-gothic">
+<div class="flex justify-between border-b border-stone-400/20 py-1">
+<span class="text-stone-500 dark:text-stone-400">Kingdom:</span>
+<span class="font-bold">Chaco</span>
+</div>
+<div class="flex justify-between border-b border-stone-400/20 py-1">
+<span class="text-stone-500 dark:text-stone-400">Guild:</span>
+<span class="font-bold text-red-700 dark:text-red-400">UCR - Radical</span>
+</div>
+<div class="flex justify-between border-b border-stone-400/20 py-1">
+<span class="text-stone-500 dark:text-stone-400">Level:</span>
+<span class="font-bold">2025-2029</span>
+</div>
+<div class="flex justify-between border-b border-stone-400/20 py-1">
+<span class="text-stone-500 dark:text-stone-400">Class:</span>
+<span class="font-bold text-blue-700 dark:text-blue-400">Justiciar</span>
+</div>
+<div class="flex justify-between py-1">
+<span class="text-stone-500 dark:text-stone-400">Quests:</span>
+<span class="font-bold text-amber-600">1 Completed</span>
+</div>
+</div>
+<button class="mt-6 w-full py-2 bg-stone-800 hover:bg-stone-700 text-gold-accent font-gothic text-xs uppercase tracking-widest transition-colors flex items-center justify-center gap-2 border border-primary/40">
+<span class="material-icons text-sm">visibility</span>
+                        Inspect Legend
+                    </button>
+</div>
+</div>
+<div class="hero-card bg-white/60 dark:bg-stone-900/80 border-2 border-stone-300 dark:border-stone-700 p-1 relative rounded-sm shadow-lg overflow-hidden group">
+<div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-800 via-primary to-purple-800"></div>
+<div class="p-4 flex flex-col items-center">
+<div class="relative w-40 h-40 mb-6 group-hover:scale-105 transition-transform">
+<div class="absolute -inset-2 border-4 border-primary rounded-full opacity-50"></div>
+<img alt="Portrait of Sabrina the Chronomancer" class="w-full h-full object-cover rounded-full border-4 border-stone-800 dark:border-stone-200 grayscale-[0.3] group-hover:grayscale-0 transition-all shadow-inner" src="https://lh3.googleusercontent.com/aida-public/AB6AXuARPTEvLMSfELWubOptI1luWwpacYIdP4JT609GSBhyDt6UajeSAtbma1eld05YAOzTgY6TWjeqGOJIn9_lK1pM4Nf8tQ8yD2I-IAsE21WAR8JRUwUrg1YI1mG8WQabo42mUVsCdqUcyhOCt_jdRGEIYiUiRmAy77BqexmgvFJjt42MWaeCxATq6I6oLO_KgCulXloC4xH0zER03b7buXjbSCo_5yNg57YsjvN_xnXgJAOf73wZKoRCN8f0ZMpLdEOSl_FwXkXnUXE"/>
+</div>
+<h3 class="font-display text-2xl text-deep-red dark:text-primary text-center mb-4">Ajmechet, Sabrina</h3>
+<div class="w-full space-y-2 text-sm font-gothic">
+<div class="flex justify-between border-b border-stone-400/20 py-1">
+<span class="text-stone-500 dark:text-stone-400">Kingdom:</span>
+<span class="font-bold text-xs">C. de Buenos Aires</span>
+</div>
+<div class="flex justify-between border-b border-stone-400/20 py-1">
+<span class="text-stone-500 dark:text-stone-400">Guild:</span>
+<span class="font-bold text-purple-700 dark:text-purple-400">Libertad Avanza</span>
+</div>
+<div class="flex justify-between border-b border-stone-400/20 py-1">
+<span class="text-stone-500 dark:text-stone-400">Level:</span>
+<span class="font-bold">2025-2029</span>
+</div>
+<div class="flex justify-between border-b border-stone-400/20 py-1">
+<span class="text-stone-500 dark:text-stone-400">Class:</span>
+<span class="font-bold text-purple-600 dark:text-purple-300">Chronomancer</span>
+</div>
+<div class="flex justify-between py-1">
+<span class="text-stone-500 dark:text-stone-400">Quests:</span>
+<span class="font-bold text-amber-600">753 Completed</span>
+</div>
+</div>
+<button class="mt-6 w-full py-2 bg-stone-800 hover:bg-stone-700 text-gold-accent font-gothic text-xs uppercase tracking-widest transition-colors flex items-center justify-center gap-2 border border-primary/40">
+<span class="material-icons text-sm">visibility</span>
+                        Inspect Legend
+                    </button>
+</div>
+</div>
+<div class="hero-card bg-white/60 dark:bg-stone-900/80 border-2 border-stone-300 dark:border-stone-700 p-1 relative rounded-sm shadow-lg overflow-hidden group">
+<div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-orange-500 via-primary to-orange-500"></div>
+<div class="p-4 flex flex-col items-center">
+<div class="relative w-40 h-40 mb-6 group-hover:scale-105 transition-transform">
+<div class="absolute -inset-2 border-4 border-primary rounded-full opacity-50"></div>
+<img alt="Portrait of Carlos the Artificer" class="w-full h-full object-cover rounded-full border-4 border-stone-800 dark:border-stone-200 grayscale-[0.3] group-hover:grayscale-0 transition-all shadow-inner" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDjKdWMquJMNEKu8sxQJOt9v3IS8RUp8Vbz9N_iwv47inJJXP4tHCmoRPCcmnGmZGWA8h4wcQWe2d_Q2CqH28BNPzxOmLIYWvWu1lmixzd8D_-CdGLiOmyObVh9J5PBbPWxCjTthJXHuGNIbT0QbzkhZ5AGRz4fcOM-dudl4UsnIkZj_I6faaZjp7khK-Vlke8X4tLAYKXyT4qOCcBpNzW8pYJFVgLeE7lKe7DIZxMVL5tDRecBonlC3yiMAmmDtIuDMN4bYFjSFnM"/>
+</div>
+<h3 class="font-display text-2xl text-deep-red dark:text-primary text-center mb-4">Almena, Carlos</h3>
+<div class="w-full space-y-2 text-sm font-gothic">
+<div class="flex justify-between border-b border-stone-400/20 py-1">
+<span class="text-stone-500 dark:text-stone-400">Kingdom:</span>
+<span class="font-bold">San Luis</span>
+</div>
+<div class="flex justify-between border-b border-stone-400/20 py-1">
+<span class="text-stone-500 dark:text-stone-400">Guild:</span>
+<span class="font-bold text-purple-700 dark:text-purple-400">Libertad Avanza</span>
+</div>
+<div class="flex justify-between border-b border-stone-400/20 py-1">
+<span class="text-stone-500 dark:text-stone-400">Level:</span>
+<span class="font-bold">2025-2029</span>
+</div>
+<div class="flex justify-between border-b border-stone-400/20 py-1">
+<span class="text-stone-500 dark:text-stone-400">Class:</span>
+<span class="font-bold text-orange-600 dark:text-orange-400">Artificer</span>
+</div>
+<div class="flex justify-between py-1">
+<span class="text-stone-500 dark:text-stone-400">Quests:</span>
+<span class="font-bold text-amber-600">3 Completed</span>
+</div>
+</div>
+<button class="mt-6 w-full py-2 bg-stone-800 hover:bg-stone-700 text-gold-accent font-gothic text-xs uppercase tracking-widest transition-colors flex items-center justify-center gap-2 border border-primary/40">
+<span class="material-icons text-sm">visibility</span>
+                        Inspect Legend
+                    </button>
+</div>
+</div>
+<div class="hero-card bg-white/60 dark:bg-stone-900/80 border-2 border-stone-300 dark:border-stone-700 p-1 relative rounded-sm shadow-lg overflow-hidden group">
+<div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-600 via-primary to-emerald-600"></div>
+<div class="p-4 flex flex-col items-center">
+<div class="relative w-40 h-40 mb-6 group-hover:scale-105 transition-transform">
+<div class="absolute -inset-2 border-4 border-primary rounded-full opacity-50"></div>
+<img alt="Portrait of Lisandro the Sentinel" class="w-full h-full object-cover rounded-full border-4 border-stone-800 dark:border-stone-200 grayscale-[0.3] group-hover:grayscale-0 transition-all shadow-inner" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC8o-bHbiTkewd4lWomfU1fh9qzHl3Ab3CpHZb2BzEDcv9vexZOol6itUWyzh-DGw6brru5rBx5aY2RpZFgEQnTcS0HiVUB6uOBZ8PGAJkxbgBbPI49KoPwrIgHgLQZTSkjq9JLh0TvZglzWIkwtCdJ-l-74l8VT0V-PF5KVt5l1MYmiBThpBSxsXh-FZ8Au8KRxu8-lcO3kToINEpXV1O4kMbqAI-8jw6qgOMJdfZwalWT6-hqe5WT0FSqTKlhUn_fPOsTNOUaDJY"/>
+</div>
+<h3 class="font-display text-2xl text-deep-red dark:text-primary text-center mb-4">Almirón, Lisandro</h3>
+<div class="w-full space-y-2 text-sm font-gothic">
+<div class="flex justify-between border-b border-stone-400/20 py-1">
+<span class="text-stone-500 dark:text-stone-400">Kingdom:</span>
+<span class="font-bold">Corrientes</span>
+</div>
+<div class="flex justify-between border-b border-stone-400/20 py-1">
+<span class="text-stone-500 dark:text-stone-400">Guild:</span>
+<span class="font-bold text-purple-700 dark:text-purple-400">Libertad Avanza</span>
+</div>
+<div class="flex justify-between border-b border-stone-400/20 py-1">
+<span class="text-stone-500 dark:text-stone-400">Level:</span>
+<span class="font-bold">2023-2027</span>
+</div>
+<div class="flex justify-between border-b border-stone-400/20 py-1">
+<span class="text-stone-500 dark:text-stone-400">Class:</span>
+<span class="font-bold text-slate-700 dark:text-slate-400">High Sentinel</span>
+</div>
+<div class="flex justify-between py-1">
+<span class="text-stone-500 dark:text-stone-400">Quests:</span>
+<span class="font-bold text-amber-600">42 Completed</span>
+</div>
+</div>
+<button class="mt-6 w-full py-2 bg-stone-800 hover:bg-stone-700 text-gold-accent font-gothic text-xs uppercase tracking-widest transition-colors flex items-center justify-center gap-2 border border-primary/40">
+<span class="material-icons text-sm">visibility</span>
+                        Inspect Legend
+                    </button>
+</div>
+</div>
+<div class="hero-card bg-white/60 dark:bg-stone-900/80 border-2 border-stone-300 dark:border-stone-700 p-1 relative rounded-sm shadow-lg overflow-hidden group">
+<div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-deep-red via-primary to-deep-red"></div>
+<div class="p-4 flex flex-col items-center">
+<div class="relative w-40 h-40 mb-6 group-hover:scale-105 transition-transform">
+<div class="absolute -inset-2 border-4 border-primary rounded-full opacity-50"></div>
+<img alt="Portrait of Ernesto the Barbarian" class="w-full h-full object-cover rounded-full border-4 border-stone-800 dark:border-stone-200 grayscale-[0.3] group-hover:grayscale-0 transition-all shadow-inner" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBRukiK2R0x-HGfDAp6KZEe_JJuvVX5QGtPYffkbeqMLJf2IiuVbZuiom_BmXwaWPlBM5YdkGiMXGcDKIjRmsAs3GgMuf27oQmhb1glXo4F0q_8j8Ys-Gq_Bowb73fqHKZQJqFw7uh6FJ--DcppcOOcyMsINyI7wkba7r6fE8qzWYo3jY5cpWvGI_T1JJfbBuF1iWxzhn85GqNiPFuj-CBwnTL44PTH2QFgbTfXtjzWupG7bA1AemeBf6ReBXa2szrcH1s2zUHsFy0"/>
+</div>
+<h3 class="font-display text-2xl text-deep-red dark:text-primary text-center mb-4">Alí, Ernesto "Pipi"</h3>
+<div class="w-full space-y-2 text-sm font-gothic">
+<div class="flex justify-between border-b border-stone-400/20 py-1">
+<span class="text-stone-500 dark:text-stone-400">Kingdom:</span>
+<span class="font-bold">San Luis</span>
+</div>
+<div class="flex justify-between border-b border-stone-400/20 py-1">
+<span class="text-stone-500 dark:text-stone-400">Guild:</span>
+<span class="font-bold text-blue-800 dark:text-blue-400">Unión por la Patria</span>
+</div>
+<div class="flex justify-between border-b border-stone-400/20 py-1">
+<span class="text-stone-500 dark:text-stone-400">Level:</span>
+<span class="font-bold">2023-2027</span>
+</div>
+<div class="flex justify-between border-b border-stone-400/20 py-1">
+<span class="text-stone-500 dark:text-stone-400">Class:</span>
+<span class="font-bold text-amber-800 dark:text-amber-500">Shield Bearer</span>
+</div>
+<div class="flex justify-between py-1">
+<span class="text-stone-500 dark:text-stone-400">Quests:</span>
+<span class="font-bold text-amber-600">28 Completed</span>
+</div>
+</div>
+<button class="mt-6 w-full py-2 bg-stone-800 hover:bg-stone-700 text-gold-accent font-gothic text-xs uppercase tracking-widest transition-colors flex items-center justify-center gap-2 border border-primary/40">
+<span class="material-icons text-sm">visibility</span>
+                        Inspect Legend
+                    </button>
+</div>
+</div>
+<div class="hero-card bg-white/60 dark:bg-stone-900/80 border-2 border-stone-300 dark:border-stone-700 p-1 relative rounded-sm shadow-lg overflow-hidden group">
+<div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-600 via-primary to-blue-600"></div>
+<div class="p-4 flex flex-col items-center">
+<div class="relative w-40 h-40 mb-6 group-hover:scale-105 transition-transform">
+<div class="absolute -inset-2 border-4 border-primary rounded-full opacity-50"></div>
+<img alt="Portrait of Cristian the Merchant" class="w-full h-full object-cover rounded-full border-4 border-stone-800 dark:border-stone-200 grayscale-[0.3] group-hover:grayscale-0 transition-all shadow-inner" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBqkjLF5DtB5KOCBrjbAoXlVL4xSHxdrekZj4JU3sTXmBMPru_txYSMM_4-dYfCHABwyzX83JaZRwTH00CcD-70jvYSRXtAFc10jg5NckH9_ZDDqQeMP4oQVRx9medGWshv-UIT-ud95DwXOcYqTSbfZ843tY8D9Jed5-npzUCeEJ6wq_-xBHsx_05C4DUHirXoqgMyYVkDvxX13ys7wJlGO0zawnU9n2TAfNHu-ZWOESa6oouhVpS4K1GUBIT_TqiZCztYQLNhghI"/>
+</div>
+<h3 class="font-display text-2xl text-deep-red dark:text-primary text-center mb-4">Andino, Cristian</h3>
+<div class="w-full space-y-2 text-sm font-gothic">
+<div class="flex justify-between border-b border-stone-400/20 py-1">
+<span class="text-stone-500 dark:text-stone-400">Kingdom:</span>
+<span class="font-bold">San Juan</span>
+</div>
+<div class="flex justify-between border-b border-stone-400/20 py-1">
+<span class="text-stone-500 dark:text-stone-400">Guild:</span>
+<span class="font-bold text-blue-800 dark:text-blue-400">Unión por la Patria</span>
+</div>
+<div class="flex justify-between border-b border-stone-400/20 py-1">
+<span class="text-stone-500 dark:text-stone-400">Level:</span>
+<span class="font-bold">2025-2029</span>
+</div>
+<div class="flex justify-between border-b border-stone-400/20 py-1">
+<span class="text-stone-500 dark:text-stone-400">Class:</span>
+<span class="font-bold text-yellow-700 dark:text-yellow-500">Coin Master</span>
+</div>
+<div class="flex justify-between py-1">
+<span class="text-stone-500 dark:text-stone-400">Quests:</span>
+<span class="font-bold text-amber-600">15 Completed</span>
+</div>
+</div>
+<button class="mt-6 w-full py-2 bg-stone-800 hover:bg-stone-700 text-gold-accent font-gothic text-xs uppercase tracking-widest transition-colors flex items-center justify-center gap-2 border border-primary/40">
+<span class="material-icons text-sm">visibility</span>
+                        Inspect Legend
+                    </button>
+</div>
+</div>
+<div class="hero-card bg-white/60 dark:bg-stone-900/80 border-2 border-stone-300 dark:border-stone-700 p-1 relative rounded-sm shadow-lg overflow-hidden group">
+<div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-stone-400 via-primary to-stone-400"></div>
+<div class="p-4 flex flex-col items-center">
+<div class="relative w-40 h-40 mb-6 group-hover:scale-105 transition-transform">
+<div class="absolute -inset-2 border-4 border-primary rounded-full opacity-50"></div>
+<img alt="Portrait of Javier the Scribe" class="w-full h-full object-cover rounded-full border-4 border-stone-800 dark:border-stone-200 grayscale-[0.3] group-hover:grayscale-0 transition-all shadow-inner" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCkAZPfvY4HrJgoBRS97ZjkL5vzROdEXM2PVWLcWtYz-JgYa3D3HqGwxupn-IRnBk2EOM8aUtqddgZHWmLi88gGlScE6ceOLSpdNH42fHfkfuNiTwghDunyZD6BtMUZ9gELJvqFi0rlr01Iitay-24AMyrxSWNnfXP9IZd2mUkHaeb4a4B1DhYgsHahFh7itqzzbtcjwBVvyMQ03YfsbCcUdavHsiocgUr3asZqOpSLfK2wAARHwjlNWmSMU-GRce5xElhb8dSi-Xc"/>
+</div>
+<h3 class="font-display text-2xl text-deep-red dark:text-primary text-center mb-4">Andrade, Javier</h3>
+<div class="w-full space-y-2 text-sm font-gothic">
+<div class="flex justify-between border-b border-stone-400/20 py-1">
+<span class="text-stone-500 dark:text-stone-400">Kingdom:</span>
+<span class="font-bold text-xs">C. de Buenos Aires</span>
+</div>
+<div class="flex justify-between border-b border-stone-400/20 py-1">
+<span class="text-stone-500 dark:text-stone-400">Guild:</span>
+<span class="font-bold text-blue-800 dark:text-blue-400">Unión por la Patria</span>
+</div>
+<div class="flex justify-between border-b border-stone-400/20 py-1">
+<span class="text-stone-500 dark:text-stone-400">Level:</span>
+<span class="font-bold">2023-2027</span>
+</div>
+<div class="flex justify-between border-b border-stone-400/20 py-1">
+<span class="text-stone-500 dark:text-stone-400">Class:</span>
+<span class="font-bold text-stone-600 dark:text-stone-400">Chief Scribe</span>
+</div>
+<div class="flex justify-between py-1">
+<span class="text-stone-500 dark:text-stone-400">Quests:</span>
+<span class="font-bold text-amber-600">89 Completed</span>
+</div>
+</div>
+<button class="mt-6 w-full py-2 bg-stone-800 hover:bg-stone-700 text-gold-accent font-gothic text-xs uppercase tracking-widest transition-colors flex items-center justify-center gap-2 border border-primary/40">
+<span class="material-icons text-sm">visibility</span>
+                        Inspect Legend
+                    </button>
+</div>
+</div>
+</div>
+</main>
+<footer class="mt-20 border-t border-primary/30 py-12 bg-black/5 dark:bg-black/20">
+<div class="max-w-7xl mx-auto px-4 text-center">
+<div class="mb-4 text-primary">
+<span class="material-icons text-5xl">shield</span>
+</div>
+<p class="font-display text-xl mb-2">Honored are those who serve the realm.</p>
+<p class="text-stone-500 dark:text-stone-400 text-xs uppercase tracking-widest">© 1254-2024 Grand Council Archive</p>
+</div>
+</footer>
+
+</body></html>

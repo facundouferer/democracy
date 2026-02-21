@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -16,7 +16,8 @@
     "next": "^15.5.0",
     "react": "^19.1.1",
     "react-chartjs-2": "^5.3.0",
-    "react-dom": "^19.1.1"
+    "react-dom": "^19.1.1",
+    "sileo": "^0.1.4"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
