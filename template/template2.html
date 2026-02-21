@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Grand Council of Heroes - Medieval RPG Hero Roster</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,typography,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=MedievalSharp&amp;family=Cinzel:wght@400;700&amp;family=IM+Fell+English+SC&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#b8860b", 
+                        "background-light": "#f4e4bc",
+                        "background-dark": "#1a1a1a",
+                        "gold-accent": "#ffd700",
+                        "deep-red": "#8b0000",
+                        "plaque-dark": "#2a221a",
+                    },
+                    fontFamily: {
+                        display: ["MedievalSharp", "serif"],
+                        gothic: ["Cinzel", "serif"],
+                        body: ["IM+Fell+English+SC", "serif"],
+                    },
+                },
+            },
+        };
+    </script>
+<style type="text/tailwindcss">
+        .parchment-texture {
+            background-image: url(/img/fondo.png);
+            background-size: cover;
+        }
+        .stone-texture {
+            background-image: url(/img/fondo.png);
+            background-size: cover;
+        }
+        .ornate-border {
+            border: 8px solid transparent;
+            border-image: url("/img/dark-leather.png") 30 stretch;
+            box-shadow: inset 0 0 0 2px #b8860b, 0 0 15px rgba(0,0,0,0.5);
+        }
+        .gold-rim {
+            box-shadow: 0 0 0 4px #1a1a1a, 0 0 0 8px #b8860b, 0 0 0 10px #ffd700, 0 10px 20px rgba(0,0,0,0.4);
+        }
+        .rhombus {
+            width: 50px;
+            height: 50px;
+            transform: rotate(45deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #ffd700;
+            background: linear-gradient(135deg, #8b0000 0%, #4a0000 100%);
+            box-shadow: 0 0 10px rgba(184, 134, 11, 0.5);
+        }
+        .rhombus-content {
+            transform: rotate(-45deg);
+        }
+        .wood-plaque {
+            background: linear-gradient(to bottom, #3d2b1f 0%, #2a1b12 100%);
+            border: 2px solid #b8860b;
+            box-shadow: inset 0 2px 0 rgba(255,255,255,0.1), 0 4px 6px rgba(0,0,0,0.4);
+            position: relative;
+        }
+        .wood-plaque::before {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            right: 2px;
+            bottom: 2px;
+            border: 1px solid rgba(184, 134, 11, 0.3);
+            pointer-events: none;
+        }
+        .hero-card {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .hero-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            z-index: 20;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-stone-900 dark:text-stone-100 min-h-screen parchment-texture dark:stone-texture font-body">
+<header class="max-w-7xl mx-auto px-4 pt-10 pb-6">
+<div class="relative bg-black/5 dark:bg-black/40 border-4 border-double border-primary p-8 rounded-lg shadow-2xl">
+<div class="absolute top-2 left-2 text-primary opacity-50"><span class="material-symbols-outlined text-4xl">shield</span></div>
+<div class="absolute top-2 right-2 text-primary opacity-50"><span class="material-symbols-outlined text-4xl">shield</span></div>
+<div class="text-center relative z-10">
+<p class="text-deep-red dark:text-gold-accent font-gothic tracking-[0.3em] text-xs mb-3 uppercase font-bold">Empire of Argentina</p>
+<h1 class="text-5xl md:text-8xl font-display text-stone-950 dark:text-white drop-shadow-[0_4px_4px_rgba(0,0,0,0.5)]">Elegidos por el Pueblo</h1>
+</div>
+</div>
+</header>
+<main class="max-w-7xl mx-auto px-4 pb-20">
+<div class="flex flex-col md:flex-row justify-between items-center mb-12 px-4 border-b-4 border-double border-primary/40 pb-6">
+<h2 class="font-display text-4xl text-deep-red dark:text-primary">Diputados de los Reinos Unidos</h2>
+<div class="flex items-center gap-8">
+<div class="flex items-center text-stone-800 dark:text-stone-300">
+<span class="material-symbols-outlined mr-3 text-primary">groups</span>
+<span class="font-gothic text-lg">257 Diputados</span>
+</div>
+<button class="w-12 h-12 flex items-center justify-center bg-stone-900 text-gold-accent rounded-full hover:bg-stone-800 transition-colors border-2 border-primary shadow-lg" onclick="document.documentElement.classList.toggle('dark')">
+<span class="material-symbols-outlined">brightness_4</span>
+</button>
+</div>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
+<div class="hero-card bg-[#fcf5e5] dark:bg-stone-900/95 ornate-border p-6 relative flex flex-col items-center">
+<div class="relative w-44 h-44 mb-8">
+<div class="absolute inset-0 rounded-full gold-rim overflow-hidden bg-stone-800">
+<img alt="Portrait" class="w-full h-full object-cover grayscale-[0.2] hover:grayscale-0 transition-all duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDWVyxV6xk_PlDfrwHhjihvKNf5m-mpB6lUSwRKXLD8_KAhshsY_OMrXvBAJiokc9nhfI3hQwP2WZUfkVjiiYC52C13fNb2DNYHbR15yvKMwbbqDQL79hS6apoyiBnqr2r651sZg3PDZpO3DlxjQicZrtIKZiB_H3nEHLwJhk4EPEs_5P6FzVqfg_AajryaiGkK8RMdnyX6O7jg1xm1ta3uxuLYF6JK2TaQfujhnvhl6u3DbnMqawQ0Y-oumWtFUzEJTXDMXJxkjy0"/>
+</div>
+</div>
+<h3 class="font-display text-3xl text-deep-red dark:text-gold-accent text-center mb-6 leading-tight">Aguirre, Hilda</h3>
+<div class="w-full space-y-3 font-gothic mb-8">
+<div class="flex justify-between items-end border-b border-stone-400/30 py-1">
+<span class="text-[10px] uppercase tracking-tighter text-stone-500 dark:text-stone-400">Reino</span>
+<span class="font-bold text-sm">La Rioja</span>
+</div>
+<div class="flex justify-center items-end border-b border-stone-400/30 py-1">
+<span class="font-bold text-sm text-blue-900 dark:text-blue-400">Unión por la Patria</span>
+</div>
+<div class="flex justify-between items-end border-b border-stone-400/30 py-1">
+<span class="text-[10px] uppercase tracking-tighter text-stone-500 dark:text-stone-400">Level</span>
+<span class="font-bold text-sm">2023-2027</span>
+</div>
+<div class="flex justify-between items-end border-b border-stone-400/30 py-1">
+<span class="text-[10px] uppercase tracking-tighter text-stone-500 dark:text-stone-400">Clase</span>
+<span class="font-bold text-sm text-green-800 dark:text-green-500">Arch-Healer</span>
+</div>
+</div>
+<div class="flex flex-col items-center mb-6">
+<span class="font-gothic text-[10px] uppercase text-deep-red dark:text-gold-accent mb-3 font-bold">Proyectos</span>
+<div class="rhombus">
+<div class="rhombus-content text-white font-display text-xl font-bold">1000</div>
+</div>
+</div>
+<button class="w-full py-4 wood-plaque text-gold-accent font-gothic text-xs uppercase tracking-[0.2em] font-bold hover:brightness-125 transition-all flex items-center justify-center gap-3">
+<span class="material-symbols-outlined text-sm">history_edu</span>
+                Ver Perfil Oficial
+            </button>
+</div>
+<div class="hero-card bg-[#fcf5e5] dark:bg-stone-900/95 ornate-border p-6 relative flex flex-col items-center">
+<div class="relative w-44 h-44 mb-8">
+<div class="absolute inset-0 rounded-full gold-rim overflow-hidden bg-stone-800">
+<img alt="Portrait" class="w-full h-full object-cover grayscale-[0.2] hover:grayscale-0 transition-all duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCwckV7yduvvepiWtfLHkwuM5NMVWAwKvDfOdM5Ks0N1usY_dYKMX7zobHrWgI6weX_O8G7uYUB7qrBJZE28u8Hbakoqoc-VL3URzmuTtej2XOwB9oVB0P6nYucu7FlwejbJ2y1eTlnp7ZHqbUG_5AP6s4KlP9UsFF6Ok3PxHWCLj4qKOaFLwRUMkdXLIKBCddp6z5MNS5piWcrN3exy9qAcHZ-jziuBNJe3eKMWAzCLmnutkc_-r75_6E3Y0DRUij1oguTNoKobtQ"/>
+</div>
+</div>
+<h3 class="font-display text-3xl text-deep-red dark:text-gold-accent text-center mb-6 leading-tight">Agüero, Guillermo</h3>
+<div class="w-full space-y-3 font-gothic mb-8">
+<div class="flex justify-between items-end border-b border-stone-400/30 py-1">
+<span class="text-[10px] uppercase tracking-tighter text-stone-500 dark:text-stone-400">Reino</span>
+<span class="font-bold text-sm">Chaco</span>
+</div>
+<div class="flex justify-center items-end border-b border-stone-400/30 py-1">
+<span class="font-bold text-sm text-red-800 dark:text-red-400">UCR - Radical</span>
+</div>
+<div class="flex justify-between items-end border-b border-stone-400/30 py-1">
+<span class="text-[10px] uppercase tracking-tighter text-stone-500 dark:text-stone-400">Level</span>
+<span class="font-bold text-sm">2025-2029</span>
+</div>
+<div class="flex justify-between items-end border-b border-stone-400/30 py-1">
+<span class="text-[10px] uppercase tracking-tighter text-stone-500 dark:text-stone-400">Clase</span>
+<span class="font-bold text-sm text-blue-800 dark:text-blue-500">Justiciar</span>
+</div>
+</div>
+<div class="flex flex-col items-center mb-6">
+<span class="font-gothic text-[10px] uppercase text-deep-red dark:text-gold-accent mb-3 font-bold">Proyectos</span>
+<div class="rhombus">
+<div class="rhombus-content text-white font-display text-xl font-bold">1</div>
+</div>
+</div>
+<button class="w-full py-4 wood-plaque text-gold-accent font-gothic text-xs uppercase tracking-[0.2em] font-bold hover:brightness-125 transition-all flex items-center justify-center gap-3">
+<span class="material-symbols-outlined text-sm">history_edu</span>
+                Ver Perfil Oficial
+            </button>
+</div>
+<div class="hero-card bg-[#fcf5e5] dark:bg-stone-900/95 ornate-border p-6 relative flex flex-col items-center">
+<div class="relative w-44 h-44 mb-8">
+<div class="absolute inset-0 rounded-full gold-rim overflow-hidden bg-stone-800">
+<img alt="Portrait" class="w-full h-full object-cover grayscale-[0.2] hover:grayscale-0 transition-all duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuARPTEvLMSfELWubOptI1luWwpacYIdP4JT609GSBhyDt6UajeSAtbma1eld05YAOzTgY6TWjeqGOJIn9_lK1pM4Nf8tQ8yD2I-IAsE21WAR8JRUwUrg1YI1mG8WQabo42mUVsCdqUcyhOCt_jdRGEIYiUiRmAy77BqexmgvFJjt42MWaeCxATq6I6oLO_KgCulXloC4xH0zER03b7buXjbSCo_5yNg57YsjvN_xnXgJAOf73wZKoRCN8f0ZMpLdEOSl_FwXkXnUXE"/>
+</div>
+</div>
+<h3 class="font-display text-3xl text-deep-red dark:text-gold-accent text-center mb-6 leading-tight">Ajmechet, Sabrina</h3>
+<div class="w-full space-y-3 font-gothic mb-8">
+<div class="flex justify-between items-end border-b border-stone-400/30 py-1">
+<span class="text-[10px] uppercase tracking-tighter text-stone-500 dark:text-stone-400">Reino</span>
+<span class="font-bold text-sm">Buenos Aires</span>
+</div>
+<div class="flex justify-center items-end border-b border-stone-400/30 py-1">
+<span class="font-bold text-sm text-purple-800 dark:text-purple-400">Libertad Avanza</span>
+</div>
+<div class="flex justify-between items-end border-b border-stone-400/30 py-1">
+<span class="text-[10px] uppercase tracking-tighter text-stone-500 dark:text-stone-400">Level</span>
+<span class="font-bold text-sm">2025-2029</span>
+</div>
+<div class="flex justify-between items-end border-b border-stone-400/30 py-1">
+<span class="text-[10px] uppercase tracking-tighter text-stone-500 dark:text-stone-400">Clase</span>
+<span class="font-bold text-sm text-purple-700 dark:text-purple-400">Chronomancer</span>
+</div>
+</div>
+<div class="flex flex-col items-center mb-6">
+<span class="font-gothic text-[10px] uppercase text-deep-red dark:text-gold-accent mb-3 font-bold">Proyectos</span>
+<div class="rhombus">
+<div class="rhombus-content text-white font-display text-xl font-bold">753</div>
+</div>
+</div>
+<button class="w-full py-4 wood-plaque text-gold-accent font-gothic text-xs uppercase tracking-[0.2em] font-bold hover:brightness-125 transition-all flex items-center justify-center gap-3">
+<span class="material-symbols-outlined text-sm">history_edu</span>
+                Ver Perfil Oficial
+            </button>
+</div>
+<div class="hero-card bg-[#fcf5e5] dark:bg-stone-900/95 ornate-border p-6 relative flex flex-col items-center">
+<div class="relative w-44 h-44 mb-8">
+<div class="absolute inset-0 rounded-full gold-rim overflow-hidden bg-stone-800">
+<img alt="Portrait" class="w-full h-full object-cover grayscale-[0.2] hover:grayscale-0 transition-all duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDjKdWMquJMNEKu8sxQJOt9v3IS8RUp8Vbz9N_iwv47inJJXP4tHCmoRPCcmnGmZGWA8h4wcQWe2d_Q2CqH28BNPzxOmLIYWvWu1lmixzd8D_-CdGLiOmyObVh9J5PBbPWxCjTthJXHuGNIbT0QbzkhZ5AGRz4fcOM-dudl4UsnIkZj_I6faaZjp7khK-Vlke8X4tLAYKXyT4qOCcBpNzW8pYJFVgLeE7lKe7DIZxMVL5tDRecBonlC3yiMAmmDtIuDMN4bYFjSFnM"/>
+</div>
+</div>
+<h3 class="font-display text-3xl text-deep-red dark:text-gold-accent text-center mb-6 leading-tight">Almena, Carlos</h3>
+<div class="w-full space-y-3 font-gothic mb-8">
+<div class="flex justify-between items-end border-b border-stone-400/30 py-1">
+<span class="text-[10px] uppercase tracking-tighter text-stone-500 dark:text-stone-400">Reino</span>
+<span class="font-bold text-sm">San Luis</span>
+</div>
+<div class="flex justify-center items-end border-b border-stone-400/30 py-1">
+<span class="font-bold text-sm text-purple-800 dark:text-purple-400">Libertad Avanza</span>
+</div>
+<div class="flex justify-between items-end border-b border-stone-400/30 py-1">
+<span class="text-[10px] uppercase tracking-tighter text-stone-500 dark:text-stone-400">Level</span>
+<span class="font-bold text-sm">2025-2029</span>
+</div>
+<div class="flex justify-between items-end border-b border-stone-400/30 py-1">
+<span class="text-[10px] uppercase tracking-tighter text-stone-500 dark:text-stone-400">Clase</span>
+<span class="font-bold text-sm text-orange-700 dark:text-orange-500">Artificer</span>
+</div>
+</div>
+<div class="flex flex-col items-center mb-6">
+<span class="font-gothic text-[10px] uppercase text-deep-red dark:text-gold-accent mb-3 font-bold">Proyectos</span>
+<div class="rhombus">
+<div class="rhombus-content text-white font-display text-xl font-bold">3</div>
+</div>
+</div>
+<button class="w-full py-4 wood-plaque text-gold-accent font-gothic text-xs uppercase tracking-[0.2em] font-bold hover:brightness-125 transition-all flex items-center justify-center gap-3">
+<span class="material-symbols-outlined text-sm">history_edu</span>
+                Ver Perfil Oficial
+            </button>
+</div>
+</div>
+</main>
+<footer class="mt-20 border-t-4 border-double border-primary/30 py-16 bg-black/10 dark:bg-black/40">
+<div class="max-w-7xl mx-auto px-4 text-center">
+<div class="mb-6 text-primary flex justify-center gap-4">
+<span class="material-symbols-outlined text-6xl">menu_book</span>
+<span class="material-symbols-outlined text-6xl">castle</span>
+<span class="material-symbols-outlined text-6xl">history_edu</span>
+</div>
+<p class="font-display text-2xl mb-3 text-stone-900 dark:text-gold-accent">¿A quien sirven los elegidos por el pueblo?</p>
+<p class="text-stone-600 dark:text-stone-400 text-sm uppercase tracking-[0.4em]">2025 - © <a href="https://www.facundouferer.ar/" target="_blank" rel="noopener noreferrer" class="hover:text-primary transition-colors">Facundo Uferer</a></p>
+</div>
+</footer>
+
+</body></html>

@@ -15,6 +15,18 @@ const nextConfig: NextConfig = {
         port: '',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'www.senado.gob.ar',
+        port: '',
+        pathname: '/bundles/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'senado.gob.ar',
+        port: '',
+        pathname: '/bundles/**',
+      },
     ],
   },
 };

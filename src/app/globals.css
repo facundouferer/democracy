@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=MedievalSharp&family=Cinzel:wght@400;700&family=IM+Fell+English+SC&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=MedievalSharp&family=Cinzel:wght@400;700&family=IM+Fell+English+SC&family=Eagle+Lake&display=swap');
 
 :root {
   color-scheme: light;
@@ -55,6 +55,42 @@ a {
   width: min(1240px, 94vw);
   margin: 0 auto;
   padding: 2rem 0 3.2rem;
+}
+
+.site-nav {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 0.9rem;
+}
+
+.site-nav nav {
+  display: inline-flex;
+  gap: 0.55rem;
+  background: rgba(255, 250, 238, 0.74);
+  border: 2px solid rgba(184, 134, 11, 0.55);
+  border-radius: 999px;
+  padding: 0.32rem;
+}
+
+.site-nav a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 120px;
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  color: #5f4a34;
+  font-family: 'Cinzel', serif;
+  font-size: 0.76rem;
+  text-transform: uppercase;
+  letter-spacing: 0.11em;
+  font-weight: 700;
+}
+
+.site-nav a.active {
+  background: linear-gradient(180deg, #3d2b1f 0%, #2a1b12 100%);
+  color: var(--gold-bright);
+  border: 1px solid rgba(184, 134, 11, 0.62);
 }
 
 .hero,
@@ -165,32 +201,87 @@ a {
 
 .cards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(272px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(292px, 1fr));
+  gap: 1.2rem;
 }
 
 .dip-card {
-  border: 2px solid rgba(125, 92, 51, 0.3);
+  position: relative;
+  border: 1px solid rgba(125, 92, 51, 0.3);
   border-radius: 8px;
-  padding: 0.9rem;
-  background: rgba(255, 255, 255, 0.58);
-  box-shadow: 0 8px 16px rgba(33, 22, 9, 0.14);
-  transition: transform 0.28s ease, box-shadow 0.28s ease;
+  padding: 1rem 0.95rem;
+  background: #fcf5e5;
+  box-shadow: 0 8px 16px rgba(33, 22, 9, 0.2);
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.35s ease;
 }
 
 .dip-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 12px 26px rgba(33, 22, 9, 0.25);
+  transform: translateY(-10px) scale(1.02);
+  box-shadow: 0 16px 28px rgba(33, 22, 9, 0.32);
+  z-index: 20;
+}
+
+.block-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 52px;
+  height: 52px;
+  z-index: 30;
+}
+
+.block-badge img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.4));
+}
+
+.block-badge span {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: #5a2e0f;
+  text-shadow:
+    0 1px 0 rgba(255, 236, 182, 0.85),
+    0 0 6px rgba(255, 216, 150, 0.45);
+  font-family: 'Eagle Lake', serif;
+  font-size: 1.18rem;
+  font-weight: 400;
+  pointer-events: none;
+  transform: translateY(-1px);
+}
+
+.ornate-border {
+  border: 8px solid transparent;
+  border-image: linear-gradient(
+      135deg,
+      #3d2b1f 0%,
+      #2a1b12 25%,
+      #4e3929 50%,
+      #2a1b12 75%,
+      #3d2b1f 100%
+    )
+    30 stretch;
+  box-shadow: inset 0 0 0 2px #b8860b, 0 0 15px rgba(0, 0, 0, 0.4);
+}
+
+.gold-rim {
+  box-shadow:
+    0 0 0 4px #1a1a1a,
+    0 0 0 8px #b8860b,
+    0 0 0 10px #ffd700,
+    0 10px 20px rgba(0, 0, 0, 0.36);
 }
 
 .card-photo {
-  width: 146px;
-  height: 146px;
-  margin: 0 auto 0.85rem;
+  width: 176px;
+  height: 176px;
+  margin: 0 auto 0.95rem;
   border-radius: 999px;
-  padding: 4px;
-  border: 3px solid var(--gold);
-  background: linear-gradient(145deg, rgba(255, 215, 0, 0.18), rgba(139, 0, 0, 0.12));
+  overflow: hidden;
+  background: #1a1a1a;
 }
 
 .card-photo img {
@@ -198,8 +289,13 @@ a {
   height: 100%;
   object-fit: cover;
   border-radius: 999px;
-  border: 3px solid #3f3225;
-  filter: grayscale(0.14);
+  border: 0;
+  filter: grayscale(0.2);
+  transition: filter 0.45s ease;
+}
+
+.dip-card:hover .card-photo img {
+  filter: grayscale(0);
 }
 
 .dip-card h3 {
@@ -207,40 +303,96 @@ a {
   text-align: center;
   color: #5a1007;
   font-family: 'MedievalSharp', serif;
-  font-size: 1.35rem;
+  font-size: 1.7rem;
+  line-height: 1.12;
 }
 
-.dip-card p {
-  margin: 0.25rem 0;
-  color: #3e2d1d;
-  font-size: 0.93rem;
-  display: grid;
-  grid-template-columns: 112px 1fr;
-  gap: 0.4rem;
+.card-meta {
+  width: 100%;
+  margin-bottom: 1rem;
 }
 
-.dip-card p strong {
-  color: #6f4f29;
+.card-meta p {
+  margin: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 0.8rem;
+  padding: 0.32rem 0;
+  border-bottom: 1px solid rgba(120, 98, 72, 0.33);
+}
+
+.card-meta p strong {
+  color: #7d6140;
   font-family: 'Cinzel', serif;
-  font-size: 0.76rem;
+  font-size: 0.64rem;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.09em;
+}
+
+.card-meta p span {
+  color: #2d2116;
+  font-size: 0.84rem;
+  text-align: right;
+}
+
+.quests-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0.1rem 0 1rem;
+}
+
+.quests-label {
+  font-family: 'Cinzel', serif;
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--deep-red);
+  margin-bottom: 0.45rem;
+}
+
+.rhombus {
+  width: 58px;
+  height: 58px;
+  transform: rotate(45deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #ffd700;
+  background: linear-gradient(135deg, #8b0000 0%, #4a0000 100%);
+  box-shadow: 0 0 10px rgba(184, 134, 11, 0.5);
+}
+
+.rhombus-content {
+  transform: rotate(-45deg);
+  color: #fff;
+  font-family: 'MedievalSharp', serif;
+  font-size: 1.2rem;
+  font-weight: 700;
 }
 
 .dip-card a {
-  display: inline-flex;
+  display: flex;
   width: 100%;
   justify-content: center;
-  margin-top: 0.7rem;
-  padding: 0.48rem 0.5rem;
-  border: 1px solid rgba(184, 134, 11, 0.65);
-  background: linear-gradient(180deg, #3a3128, #282019);
+  margin-top: 0;
+  padding: 0.85rem 0.6rem;
+  border: 2px solid #b8860b;
+  background: linear-gradient(to bottom, #3d2b1f 0%, #2a1b12 100%);
   color: var(--gold-bright);
-  font-size: 0.73rem;
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.1), 0 4px 6px rgba(0, 0, 0, 0.4);
+  position: relative;
+  font-size: 0.68rem;
   font-family: 'Cinzel', serif;
   text-transform: uppercase;
-  letter-spacing: 0.12em;
-  border-radius: 0;
+  letter-spacing: 0.18em;
+  font-weight: 700;
+  transition: filter 0.25s ease;
+}
+
+.dip-card a:hover {
+  filter: brightness(1.15);
 }
 
 .auth-shell {
@@ -457,8 +609,9 @@ a {
     grid-template-columns: 1fr;
   }
 
-  .dip-card p {
-    grid-template-columns: 1fr;
-    gap: 0.15rem;
+  .card-meta p {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.2rem;
   }
 }
