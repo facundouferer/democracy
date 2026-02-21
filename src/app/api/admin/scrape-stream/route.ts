@@ -1,8 +1,10 @@
 import { requireAdminSession } from '@/lib/admin-auth';
 import connectDB from '@/lib/mongodb';
 import { scrapeDiputados } from '@/lib/scrape-diputados';
+import { scrapeSenadores } from '@/lib/scrape-senadores';
 import { assertSafeGetOrigin } from '@/lib/security';
 import Diputado from '@/models/Diputado';
+import Senador from '@/models/Senador';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -32,14 +34,24 @@ export async function GET(request: Request) {
 
       try {
         push('start', {
-          message: 'Iniciando scraping de diputados...',
+          message: 'Iniciando scraping de diputados y senadores...',
           startedAt: new Date().toISOString(),
         });
 
         await connectDB();
 
+        push('progress', {
+          type: 'phase_start',
+          phase: 'diputados',
+          message: 'Iniciando Cámara de Diputados',
+        });
+
         const diputados = await scrapeDiputados({
           onProgress: async (progress) => {
+            if (progress.type === 'list_loaded') {
+              push('progress', { type: 'deputies_list_loaded', total: progress.total });
+              return;
+            }
             push('progress', progress);
           },
         });
@@ -64,13 +76,60 @@ export async function GET(request: Request) {
           },
         }));
 
-        const result = await Diputado.bulkWrite(operations, { ordered: false });
+        const diputadosResult = await Diputado.bulkWrite(operations, { ordered: false });
+
+        push('progress', {
+          type: 'phase_start',
+          phase: 'senadores',
+          message: 'Iniciando Honorable Senado',
+        });
+
+        const senadores = await scrapeSenadores({
+          onProgress: async (progress) => {
+            push('progress', progress);
+          },
+        });
+
+        if (senadores.length === 0) {
+          push('error', { message: 'El scraping no devolvió senadores.' });
+          controller.close();
+          return;
+        }
+
+        const senadoresOps = senadores.map((senador) => ({
+          updateOne: {
+            filter: { link: senador.link },
+            update: {
+              $set: {
+                nombre: senador.nombre,
+                distrito: senador.distrito,
+                bloque: senador.bloque,
+                mandato: senador.mandato,
+                total_proyectos: senador.total_proyectos,
+                foto: senador.foto,
+                link: senador.link,
+                fechaActualizacion: now,
+              },
+            },
+            upsert: true,
+          },
+        }));
+
+        const senadoresResult = await Senador.bulkWrite(senadoresOps, { ordered: false });
 
         push('done', {
           ok: true,
-          totalScrapeados: diputados.length,
-          creados: result.upsertedCount,
-          modificados: result.modifiedCount,
+          totalScrapeados: diputados.length + senadores.length,
+          diputados: {
+            totalScrapeados: diputados.length,
+            creados: diputadosResult.upsertedCount,
+            modificados: diputadosResult.modifiedCount,
+          },
+          senadores: {
+            totalScrapeados: senadores.length,
+            creados: senadoresResult.upsertedCount,
+            modificados: senadoresResult.modifiedCount,
+          },
           fecha: now.toISOString(),
         });
       } catch (error) {

@@ -6,6 +6,19 @@ import { sileo } from 'sileo';
 
 type ProgressEvent =
   | {
+      type: 'phase_start';
+      phase: 'diputados' | 'senadores';
+      message: string;
+    }
+  | {
+      type: 'deputies_list_loaded';
+      total: number;
+    }
+  | {
+      type: 'senators_list_loaded';
+      total: number;
+    }
+  | {
       type: 'list_loaded';
       total: number;
     }
@@ -30,13 +43,41 @@ type ProgressEvent =
       total: number;
       error: string;
       diputado: { nombre: string; apellido: string; slug: string };
+    }
+  | {
+      type: 'senator_start';
+      index: number;
+      total: number;
+      senador: { nombre: string; link: string };
+    }
+  | {
+      type: 'senator_done';
+      index: number;
+      total: number;
+      senador: { nombre: string; link: string };
+      total_proyectos: number;
+    }
+  | {
+      type: 'senator_error';
+      index: number;
+      total: number;
+      senador: { nombre: string; link: string };
+      error: string;
     };
 
 type DonePayload = {
   ok: boolean;
   totalScrapeados: number;
-  creados: number;
-  modificados: number;
+  diputados: {
+    totalScrapeados: number;
+    creados: number;
+    modificados: number;
+  };
+  senadores: {
+    totalScrapeados: number;
+    creados: number;
+    modificados: number;
+  };
   fecha: string;
 };
 
@@ -57,7 +98,7 @@ export default function AdminPanelClient() {
   const [message, setMessage] = useState<string | null>(null);
   const [total, setTotal] = useState(0);
   const [processed, setProcessed] = useState(0);
-  const [currentDiputado, setCurrentDiputado] = useState<string | null>(null);
+  const [currentActor, setCurrentActor] = useState<string | null>(null);
   const [logs, setLogs] = useState<LogItem[]>([]);
 
   const progressPercent = useMemo(() => {
@@ -91,13 +132,13 @@ export default function AdminPanelClient() {
     setMessage(null);
     setTotal(0);
     setProcessed(0);
-    setCurrentDiputado(null);
+    setCurrentActor(null);
     setLogs([]);
 
     appendLog('Iniciando proceso de scraping...');
     sileo.show({
       title: 'Obteniendo datos',
-      description: 'Conectando con Diputados...',
+      description: 'Conectando con ambas cámaras...',
       duration: 2000,
     });
 
@@ -118,16 +159,32 @@ export default function AdminPanelClient() {
       const payload = JSON.parse((event as MessageEvent).data) as ProgressEvent;
 
       if (payload.type === 'list_loaded') {
-        setTotal(payload.total);
+        setTotal((prev) => prev + payload.total);
         appendLog(`Listado cargado: ${payload.total} diputados.`);
+        return;
+      }
+
+      if (payload.type === 'phase_start') {
+        appendLog(payload.message);
+        return;
+      }
+
+      if (payload.type === 'deputies_list_loaded') {
+        setTotal((prev) => prev + payload.total);
+        appendLog(`Listado cargado: ${payload.total} diputados.`);
+        return;
+      }
+
+      if (payload.type === 'senators_list_loaded') {
+        setTotal((prev) => prev + payload.total);
+        appendLog(`Listado cargado: ${payload.total} senadores.`);
         return;
       }
 
       if (payload.type === 'deputy_start') {
         const name = getDiputadoLabel(payload.diputado);
-        setCurrentDiputado(name);
-        setProcessed(payload.index - 1);
-        appendLog(`[${payload.index}/${payload.total}] Scraping: ${name}`);
+        setCurrentActor(`Diputado: ${name}`);
+        appendLog(`[Diputados ${payload.index}/${payload.total}] Scraping: ${name}`);
         const shouldToast =
           payload.index === 1 || payload.index === payload.total || payload.index % 15 === 0;
         if (shouldToast) {
@@ -142,17 +199,39 @@ export default function AdminPanelClient() {
 
       if (payload.type === 'deputy_done') {
         const name = getDiputadoLabel(payload.diputado);
-        setProcessed(payload.index);
+        setProcessed((prev) => prev + 1);
         appendLog(
-          `[${payload.index}/${payload.total}] ${name}: ${payload.total_proyectos} proyectos, profesión: ${payload.profesion || 'N/D'}, fecha nac: ${payload.fecha_nacimiento || 'N/D'}.`
+          `[Diputados ${payload.index}/${payload.total}] ${name}: ${payload.total_proyectos} proyectos, profesión: ${payload.profesion || 'N/D'}, fecha nac: ${payload.fecha_nacimiento || 'N/D'}.`
         );
         return;
       }
 
       if (payload.type === 'deputy_error') {
         const name = getDiputadoLabel(payload.diputado);
-        setProcessed(payload.index);
-        appendLog(`[${payload.index}/${payload.total}] Error en ${name}: ${payload.error}`);
+        setProcessed((prev) => prev + 1);
+        appendLog(`[Diputados ${payload.index}/${payload.total}] Error en ${name}: ${payload.error}`);
+        return;
+      }
+
+      if (payload.type === 'senator_start') {
+        setCurrentActor(`Senador: ${payload.senador.nombre}`);
+        appendLog(`[Senadores ${payload.index}/${payload.total}] Scraping: ${payload.senador.nombre}`);
+        return;
+      }
+
+      if (payload.type === 'senator_done') {
+        setProcessed((prev) => prev + 1);
+        appendLog(
+          `[Senadores ${payload.index}/${payload.total}] ${payload.senador.nombre}: ${payload.total_proyectos} proyectos.`
+        );
+        return;
+      }
+
+      if (payload.type === 'senator_error') {
+        setProcessed((prev) => prev + 1);
+        appendLog(
+          `[Senadores ${payload.index}/${payload.total}] Error en ${payload.senador.nombre}: ${payload.error}`
+        );
       }
     });
 
@@ -160,18 +239,19 @@ export default function AdminPanelClient() {
       const payload = JSON.parse((event as MessageEvent).data) as DonePayload;
 
       const text =
-        `Sincronización OK. Scrapeados: ${payload.totalScrapeados}. ` +
-        `Creados: ${payload.creados}. Modificados: ${payload.modificados}.`;
+        `Sincronización OK. Total: ${payload.totalScrapeados}. ` +
+        `Diputados: ${payload.diputados.totalScrapeados} (creados ${payload.diputados.creados}, modificados ${payload.diputados.modificados}). ` +
+        `Senadores: ${payload.senadores.totalScrapeados} (creados ${payload.senadores.creados}, modificados ${payload.senadores.modificados}).`;
 
       setMessage(text);
       appendLog(text);
-      setCurrentDiputado(null);
+      setCurrentActor(null);
       setLoading(false);
       closeStream();
 
       sileo.success({
         title: 'Sincronización completada',
-        description: `${payload.totalScrapeados} diputados procesados`,
+        description: `${payload.totalScrapeados} registros procesados`,
       });
 
       router.refresh();
@@ -186,7 +266,7 @@ export default function AdminPanelClient() {
       const text = payload.message ?? 'Error de conexión durante el scraping.';
       setMessage(text);
       appendLog(text);
-      setCurrentDiputado(null);
+      setCurrentActor(null);
       setLoading(false);
       closeStream();
 
@@ -233,7 +313,7 @@ export default function AdminPanelClient() {
             <strong>Avance:</strong> {processed}/{total} ({progressPercent}%)
           </p>
           <p>
-            <strong>Diputado actual:</strong> {currentDiputado ?? '---'}
+            <strong>Actual:</strong> {currentActor ?? '---'}
           </p>
         </div>
 

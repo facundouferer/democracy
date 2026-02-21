@@ -16,6 +16,37 @@ export type ScrapedSenador = {
   email: string;
 };
 
+export type ScrapeSenadoresProgressEvent =
+  | {
+      type: 'senators_list_loaded';
+      total: number;
+    }
+  | {
+      type: 'senator_start';
+      index: number;
+      total: number;
+      senador: Pick<ScrapedSenador, 'nombre' | 'link'>;
+    }
+  | {
+      type: 'senator_done';
+      index: number;
+      total: number;
+      senador: Pick<ScrapedSenador, 'nombre' | 'link'>;
+      total_proyectos: number;
+    }
+  | {
+      type: 'senator_error';
+      index: number;
+      total: number;
+      senador: Pick<ScrapedSenador, 'nombre' | 'link'>;
+      error: string;
+    };
+
+type ScrapeSenadoresOptions = {
+  onProgress?: (event: ScrapeSenadoresProgressEvent) => Promise<void> | void;
+  projectConcurrency?: number;
+};
+
 function normalizeSpace(value: string): string {
   return value.replace(/\s+/g, ' ').trim();
 }
@@ -111,7 +142,7 @@ async function fetchProjectsCountForSenador(profileUrl: string): Promise<number>
 async function withConcurrencyLimit<T>(
   items: T[],
   limit: number,
-  worker: (item: T) => Promise<void>
+  worker: (item: T, index: number) => Promise<void>
 ): Promise<void> {
   const safeLimit = Math.max(1, limit);
   let index = 0;
@@ -119,7 +150,7 @@ async function withConcurrencyLimit<T>(
   async function runWorker() {
     while (index < items.length) {
       const current = index++;
-      await worker(items[current]);
+      await worker(items[current], current);
     }
   }
 
@@ -128,7 +159,10 @@ async function withConcurrencyLimit<T>(
   );
 }
 
-export async function scrapeSenadores(): Promise<ScrapedSenador[]> {
+export async function scrapeSenadores(
+  options: ScrapeSenadoresOptions = {}
+): Promise<ScrapedSenador[]> {
+  const { onProgress, projectConcurrency = 5 } = options;
   const response = await fetch(SENADO_LIST_URL, {
     headers: {
       'User-Agent': 'Mozilla/5.0 (compatible; DemocracyBot/1.0)',
@@ -190,11 +224,47 @@ export async function scrapeSenadores(): Promise<ScrapedSenador[]> {
     });
   });
 
-  await withConcurrencyLimit(senadores, 5, async (senador) => {
+  await onProgress?.({
+    type: 'senators_list_loaded',
+    total: senadores.length,
+  });
+
+  await withConcurrencyLimit(senadores, projectConcurrency, async (senador, rowIndex) => {
+    const index = rowIndex + 1;
+    await onProgress?.({
+      type: 'senator_start',
+      index,
+      total: senadores.length,
+      senador: {
+        nombre: senador.nombre,
+        link: senador.link,
+      },
+    });
+
     try {
       senador.total_proyectos = await fetchProjectsCountForSenador(senador.link);
-    } catch {
+      await onProgress?.({
+        type: 'senator_done',
+        index,
+        total: senadores.length,
+        senador: {
+          nombre: senador.nombre,
+          link: senador.link,
+        },
+        total_proyectos: senador.total_proyectos,
+      });
+    } catch (error) {
       senador.total_proyectos = 0;
+      await onProgress?.({
+        type: 'senator_error',
+        index,
+        total: senadores.length,
+        senador: {
+          nombre: senador.nombre,
+          link: senador.link,
+        },
+        error: error instanceof Error ? error.message : 'Error al contar proyectos',
+      });
     }
   });
 

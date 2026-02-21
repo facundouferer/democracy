@@ -9,6 +9,7 @@ export interface IDiputado extends Document {
   profesion?: string;
   fecha_nacimiento?: string;
   total_proyectos: number;
+  resumen?: string;
   foto: string;
   link: string;
   slug: string;
@@ -25,6 +26,7 @@ const DiputadoSchema = new Schema<IDiputado>(
     profesion: { type: String, default: '' },
     fecha_nacimiento: { type: String, default: '' },
     total_proyectos: { type: Number, required: true, default: 0, index: true },
+    resumen: { type: String, default: '' },
     foto: { type: String, required: true },
     link: { type: String, required: true, unique: true },
     slug: { type: String, required: true, unique: true, index: true },

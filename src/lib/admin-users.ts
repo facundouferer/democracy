@@ -7,6 +7,23 @@ function normalizeEmail(email: string): string {
   return email.trim().toLowerCase();
 }
 
+function canonicalizeEmail(email: string): string {
+  const normalized = normalizeEmail(email);
+  const [localRaw, domainRaw = ''] = normalized.split('@');
+  let local = localRaw;
+  let domain = domainRaw;
+
+  if (domain === 'googlemail.com') {
+    domain = 'gmail.com';
+  }
+
+  if (domain === 'gmail.com') {
+    local = local.split('+')[0].replace(/\./g, '');
+  }
+
+  return `${local}@${domain}`;
+}
+
 function hashPassword(password: string): string {
   const salt = crypto.randomBytes(16).toString('base64');
   const hash = crypto.scryptSync(password, salt, 64).toString('base64');
@@ -55,13 +72,28 @@ export async function ensureDefaultAdminUser(): Promise<void> {
 export async function validateAdminCredentials(email: string, password: string): Promise<boolean> {
   await connectDB();
 
-  const admin = await AdminUser.findOne({ email: normalizeEmail(email) })
+  const inputEmail = normalizeEmail(email);
+  const admin = await AdminUser.findOne({ email: inputEmail })
     .select('passwordHash')
     .exec();
 
-  if (!admin) {
-    return false;
+  if (admin && verifyPassword(password, admin.passwordHash)) {
+    return true;
   }
 
-  return verifyPassword(password, admin.passwordHash);
+  // Fallback para variantes de email (ej: gmail con/sin puntos o alias históricos).
+  const canonicalInput = canonicalizeEmail(inputEmail);
+  const candidates = await AdminUser.find({})
+    .select('email passwordHash')
+    .exec();
+
+  for (const candidate of candidates) {
+    if (canonicalizeEmail(candidate.email) === canonicalInput) {
+      if (verifyPassword(password, candidate.passwordHash)) {
+        return true;
+      }
+    }
+  }
+
+  return false;
 }

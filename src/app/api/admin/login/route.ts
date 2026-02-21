@@ -55,7 +55,7 @@ export async function POST(request: Request) {
 
     const body = (await request.json()) as { email?: string; password?: string };
     const email = (body.email ?? '').trim().toLowerCase();
-    const password = body.password ?? '';
+    const password = (body.password ?? '').trim();
 
     if (!isEmailFormat(email) || password.length < 8 || password.length > 200) {
       return NextResponse.json(
@@ -87,9 +87,26 @@ export async function POST(request: Request) {
       return NextResponse.json({ ok: false, message: 'Origen inválido' }, { status: 403 });
     }
 
+    if (
+      error instanceof Error &&
+      (error.message.includes('ADMIN_SESSION_SECRET') ||
+        error.message.includes('ADMIN_DEFAULT_EMAIL') ||
+        error.message.includes('ADMIN_DEFAULT_PASSWORD') ||
+        error.message.includes('MONGODB_URI'))
+    ) {
+      return NextResponse.json(
+        {
+          ok: false,
+          message:
+            'Error de configuración del servidor. Revisá variables de entorno del administrador.',
+        },
+        { status: 500 }
+      );
+    }
+
     return NextResponse.json(
       { ok: false, message: 'No se pudo iniciar sesión' },
-      { status: 400 }
+      { status: 500 }
     );
   }
 }
